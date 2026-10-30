@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database files (keep clean template or ignore runtime DB)
+*.db-journal
+*.sqlite3-journal
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+.env
+
+# macOS system files
+.DS_Store

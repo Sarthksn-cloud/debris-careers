@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debris Careers — Account Authentication</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Ambient Calming Constellation Background -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-theme-bar">
+        <button type="button" class="theme-toggle-btn" title="Toggle Theme">
+          <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
+        </button>
+      </div>
+
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <img src="{{ url_for('static', filename='images/debris_logo.jpg') }}" alt="Debris Logo" class="brand-logo-img">
+        </div>
+        <h1 class="auth-title">Debris Careers</h1>
+        <p class="auth-subtitle">Rule-Based Career Consultant</p>
+      </div>
+
+      {% if error %}
+      <div class="auth-error">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn {% if mode != 'register' %}active{% endif %}" id="tabLogin">Sign In</button>
+        <button type="button" class="auth-tab-btn {% if mode == 'register' %}active{% endif %}" id="tabRegister">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" method="POST" action="{{ url_for('auth_login') }}" style="{% if mode == 'register' %}display: none;{% endif %}">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" name="email" class="form-input" placeholder="e.g. student@college.edu" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password (Max 8 Chars)</label>
+          <input type="password" id="loginPassword" name="password" class="form-input" maxlength="8" placeholder="••••••••" required autocomplete="current-password">
+          <small class="form-helper">Password protection: Maximum 8 characters allowed.</small>
+        </div>
+        <button type="submit" class="btn-primary">Access Consultant</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" method="POST" action="{{ url_for('auth_register') }}" style="{% if mode != 'register' %}display: none;{% endif %}">
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" name="email" class="form-input" placeholder="e.g. student@college.edu" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password (Max 8 Chars)</label>
+          <input type="password" id="regPassword" name="password" class="form-input" maxlength="8" placeholder="••••••••" required autocomplete="new-password">
+          <small class="form-helper">Policy: Password must not exceed 8 characters.</small>
+        </div>
+        <button type="submit" class="btn-primary">Register Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/ambient.js') }}"></script>
+  <script>
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerForm.style.display = 'block';
+      loginForm.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

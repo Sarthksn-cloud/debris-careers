@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debris Careers — Rule-Based Consultant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Ambient Calming Constellation Background -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <div class="app-container">
+    <!-- Left Frosted Glass Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge-container">
+          <img src="{{ url_for('static', filename='images/debris_logo.jpg') }}" alt="Debris Logo" class="sidebar-logo">
+          <h1 class="brand-name">Debris Careers</h1>
+        </div>
+        <p class="brand-desc">AI & NLP Career Consultant</p>
+
+        <a href="{{ url_for('new_conversation') }}" class="new-chat-btn">
+          <span>+</span> New Consultation
+        </a>
+      </div>
+
+      <div class="history-section">
+        <div class="clear-history-bar">
+          <span class="section-label">Consultation History</span>
+          {% if conversations %}
+          <form method="POST" action="{{ url_for('clear_all_chats') }}" onsubmit="return confirm('Clear entire consultation history?');" style="margin: 0;">
+            <button type="submit" class="btn-clear-all" title="Clear all history">Clear All</button>
+          </form>
+          {% endif %}
+        </div>
+        <ul class="history-list">
+          {% if conversations %}
+            {% for conv in conversations %}
+              <li>
+                <div class="history-item-wrapper {% if conv.id == active_conv_id %}active{% endif %}">
+                  <a href="{{ url_for('chat_view', conv_id=conv.id) }}" class="history-item" title="{{ conv.title }}">
+                    {{ conv.title }}
+                  </a>
+                  <form method="POST" action="{{ url_for('delete_chat', conv_id=conv.id) }}" class="delete-chat-form" onsubmit="return confirm('Delete this consultation?');">
+                    <button type="submit" class="btn-delete-conv" title="Delete session">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li style="font-size: 12px; color: var(--text-muted); padding: 12px 10px;">No previous sessions yet.</li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-badge" title="{{ user_email }}">
+          Account: <strong>{{ user_email }}</strong>
+        </div>
+        <div class="sidebar-footer-actions">
+          <button type="button" class="theme-toggle-btn" title="Switch Theme">
+            <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
+          </button>
+          <a href="{{ url_for('auth_logout') }}" class="logout-link">
+            Sign Out &rarr;
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Frosted Glass Workspace -->
+    <main class="chat-main">
+      <header class="chat-header">
+        <div class="chat-title-group">
+          <h2>{{ current_conversation.title if current_conversation else "Career Consultation" }}</h2>
+        </div>
+        <div class="header-controls">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span>Rule-Based Active</span>
+          </div>
+          <button type="button" class="theme-toggle-btn" title="Switch Light/Dark Mode">
+            <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Message History Container -->
+      <section class="messages-container" id="messagesContainer">
+        {% for msg in messages %}
+          {% if msg.sender == 'user' %}
+            <div class="message-row user-row">
+              <div class="sender-tag">You</div>
+              <div class="bubble">{{ msg.content }}</div>
+            </div>
+          {% else %}
+            <div class="message-row bot-row">
+              <div class="sender-tag">Debris Careers Consultant</div>
+              <div class="bubble" data-raw="{{ msg.content }}"></div>
+              
+              {% if loop.last and msg.options %}
+                <div class="quick-options">
+                  {% for opt in msg.options %}
+                    <button type="button" class="option-btn" data-val="{{ opt }}">{{ opt }}</button>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </section>
+
+      <!-- Bottom Chat Form -->
+      <footer class="chat-footer">
+        <form id="chatForm">
+          <div class="input-container">
+            <input type="text" id="userInput" class="chat-input" placeholder="Type your interest (e.g. 'I am interested in accounts') or select an option above..." autocomplete="off" autofocus required>
+            <button type="submit" class="chat-submit-btn">Send Query</button>
+          </div>
+          <div class="input-hint">
+            <span>Explore Medical, Non-Medical, Commerce, Humanities</span>
+            <span>Deterministic Expert System • Soothing Mind Mode</span>
+          </div>
+        </form>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    window.ACTIVE_CONV_ID = "{{ active_conv_id }}";
+  </script>
+  <script src="{{ url_for('static', filename='js/ambient.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

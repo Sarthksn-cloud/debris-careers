@@ -1,0 +1,259 @@
+import json
+
+cells = [
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# 🏛️ Debris Careers — NLP & Machine Learning Career Consultant\n",
+            "### College Project: Information Retrieval & Cosine Similarity Recommendation Engine\n",
+            "- **Core ML Framework:** scikit-learn (`TfidfVectorizer`, `cosine_similarity`) & pandas\n",
+            "- **Architecture:** 5-Stage Machine Learning Pipeline (NLP Extraction &rarr; Vectorization &rarr; Similarity Calculation &rarr; Ranking &rarr; Template Explanation)\n",
+            "- **Interaction Model:** Multi-turn Conversational Chatbot (tracks profile answers, subjects, activities, and career priorities)\n",
+            "- **Aesthetics:** Minimalist Monochrome Liquid Glass (`backdrop-filter: blur`) with Ambient Floating Constellation Canvas\n",
+            "- **Security:** Email Authentication with strict **Maximum 8-Character Password Protection**\n",
+            "- **Offline Capability:** 100% Local execution — Zero external LLMs, Zero paid APIs, Zero network requirements\n"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 1. Database Initialization & Authentication Module\n",
+            "Creates SQLite tables for `users`, `conversations`, and `messages`.\n",
+            "Enforces the security constraint: **Password must be maximum 8 characters**."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "import sqlite3\n",
+            "import hashlib\n",
+            "import uuid\n",
+            "import json\n",
+            "import os\n",
+            "\n",
+            "DB_NAME = 'debris_careers.db'\n",
+            "\n",
+            "def get_db():\n",
+            "    conn = sqlite3.connect(DB_NAME)\n",
+            "    conn.row_factory = sqlite3.Row\n",
+            "    return conn\n",
+            "\n",
+            "def hash_password(password: str) -> str:\n",
+            "    salt = 'debris_careers_salt_'\n",
+            "    return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()\n",
+            "\n",
+            "def setup_database():\n",
+            "    conn = get_db()\n",
+            "    cursor = conn.cursor()\n",
+            "    \n",
+            "    cursor.execute('''\n",
+            "    CREATE TABLE IF NOT EXISTS users (\n",
+            "        id INTEGER PRIMARY KEY AUTOINCREMENT,\n",
+            "        email TEXT UNIQUE NOT NULL,\n",
+            "        password_hash TEXT NOT NULL,\n",
+            "        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n",
+            "    );\n",
+            "    ''')\n",
+            "    \n",
+            "    cursor.execute('''\n",
+            "    CREATE TABLE IF NOT EXISTS conversations (\n",
+            "        id TEXT PRIMARY KEY,\n",
+            "        user_id INTEGER NOT NULL,\n",
+            "        title TEXT NOT NULL,\n",
+            "        state_data TEXT,\n",
+            "        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n",
+            "        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n",
+            "        FOREIGN KEY (user_id) REFERENCES users (id)\n",
+            "    );\n",
+            "    ''')\n",
+            "    \n",
+            "    cursor.execute('''\n",
+            "    CREATE TABLE IF NOT EXISTS messages (\n",
+            "        id INTEGER PRIMARY KEY AUTOINCREMENT,\n",
+            "        conversation_id TEXT NOT NULL,\n",
+            "        sender TEXT NOT NULL,\n",
+            "        content TEXT NOT NULL,\n",
+            "        options TEXT,\n",
+            "        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n",
+            "        FOREIGN KEY (conversation_id) REFERENCES conversations (id)\n",
+            "    );\n",
+            "    ''')\n",
+            "    conn.commit()\n",
+            "    conn.close()\n",
+            "    print('✅ Debris Careers Database initialized.')\n",
+            "\n",
+            "def register_user(email: str, password: str):\n",
+            "    email = email.strip().lower()\n",
+            "    if not email or '@' not in email:\n",
+            "        return False, 'Invalid email format.'\n",
+            "    if len(password) < 1:\n",
+            "        return False, 'Password cannot be empty.'\n",
+            "    if len(password) > 8:\n",
+            "        return False, 'Constraint Failed: Password must be maximum 8 characters.'\n",
+            "    \n",
+            "    pwd_hash = hash_password(password)\n",
+            "    conn = get_db()\n",
+            "    cursor = conn.cursor()\n",
+            "    try:\n",
+            "        cursor.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', (email, pwd_hash))\n",
+            "        conn.commit()\n",
+            "        return True, f'User {email} registered successfully.'\n",
+            "    except sqlite3.IntegrityError:\n",
+            "        return False, 'Account already exists.'\n",
+            "    finally:\n",
+            "        conn.close()\n",
+            "\n",
+            "setup_database()\n",
+            "print(register_user('demo@debriscareers.com', 'pass123'))\n",
+            "# Verify security boundary constraint rejection (> 8 chars)\n",
+            "print(register_user('test@debriscareers.com', 'longpassword999'))\n"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 2. NLP Pipeline & TF-IDF Vectorization & Cosine Similarity\n",
+            "Demonstrates the 5-Stage Machine Learning approach:\n",
+            "1. **Information Extraction:** Extract subjects, skills, and values from student query.\n",
+            "2. **Vectorization:** Convert student text and career corpus into numerical TF-IDF vectors.\n",
+            "3. **Similarity Calculation:** Compute mathematical Cosine Similarity.\n",
+            "4. **Ranking:** Sort similarity scores in descending order.\n",
+            "5. **Explanations:** Generate verified career recommendations with colleges and next action steps."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "from rule_engine import NLP_ENGINE, DF_CAREERS\n",
+            "import pandas as pd\n",
+            "\n",
+            "print(f'Total Careers in Database: {len(DF_CAREERS)}')\n",
+            "print('\\nFeature Matrix Shape (TF-IDF Careers):', NLP_ENGINE.career_matrix.shape)\n",
+            "\n",
+            "# Example Student Input\n",
+            "sample_input = 'I like mathematics, computers, and solving logical problems. I want a high-paying job.'\n",
+            "print(f'\\nProcessing Sample Student Input:\\n\"{sample_input}\"\\n')\n",
+            "\n",
+            "# Stage 1: Extracted Information\n",
+            "extracted = NLP_ENGINE.extract_student_attributes(sample_input)\n",
+            "print('Step 1 (NLP Information Extraction):')\n",
+            "print('  • Interests Detected:', extracted['interests'])\n",
+            "print('  • Priorities Detected:', extracted['priorities'])\n",
+            "\n",
+            "# Stage 2, 3 & 4: TF-IDF & Cosine Similarity Ranking\n",
+            "results = NLP_ENGINE.recommend(sample_input, top_k=4)\n",
+            "print('\\nStep 3 & 4 (Cosine Similarity Ranking):')\n",
+            "for r in results:\n",
+            "    print(f\"  Rank #{r['rank']}: {r['career']['title']} | Similarity Score: {r['score']} ({r['score_percent']}%)\")\n"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 3. Interactive Multi-Turn Chatbot Test\n",
+            "Simulates a multi-turn conversation tracking student subjects, activities, and career values."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "from rule_engine import ConversationalCareerBot\n",
+            "\n",
+            "def chat_turn(message, state):\n",
+            "    reply, next_state, opts = ConversationalCareerBot.process_chat_message(message, state)\n",
+            "    print('=' * 75)\n",
+            "    print(f'USER: {message}')\n",
+            "    print('-' * 75)\n",
+            "    print(f'DEBRIS BOT:\\n{reply}')\n",
+            "    print('-' * 75)\n",
+            "    print(f'Quick Options: {opts}\\n')\n",
+            "    return next_state\n",
+            "\n",
+            "# Simulating 3-turn interactive conversation\n",
+            "s0 = {'stage': 'stage_ask_subjects', 'profile_answers': []}\n",
+            "s1 = chat_turn('Mathematics and computers', s0)\n",
+            "s2 = chat_turn('Coding and solving problems', s1)\n",
+            "s3 = chat_turn('High salary and job stability', s2)\n"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 4. Launch the Debris Careers Web Application\n",
+            "Runs the Flask server with the new NLP engine and liquid frosted glass interface at **http://127.0.0.1:5001**."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "import threading\n",
+            "import time\n",
+            "from app import app\n",
+            "\n",
+            "def start_server():\n",
+            "    app.run(host='127.0.0.1', port=5001, debug=False, use_reloader=False)\n",
+            "\n",
+            "t = threading.Thread(target=start_server, daemon=True)\n",
+            "t.start()\n",
+            "time.sleep(1.5)\n",
+            "\n",
+            "print('\\n🚀 Debris Careers Web Application is LIVE with NLP & Cosine Similarity!')\n",
+            "print('👉 Open your browser at: http://127.0.0.1:5001\\n')\n"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 5. College Viva Presentation Notes (NLP + ML)\n",
+            "1. **Information Retrieval (IR) vs Generative AI:**\n",
+            "   - Rather than relying on black-box LLMs that hallucinate, we convert text to a high-dimensional vector space using **TF-IDF (Term Frequency-Inverse Document Frequency)**.\n",
+            "2. **Mathematical Formula for Cosine Similarity:**\n",
+            "   $$\\text{Cosine Similarity}(A, B) = \\frac{A \\cdot B}{\\|A\\| \\|B\\|} = \\frac{\\sum_{i=1}^{n} A_i B_i}{\\sqrt{\\sum_{i=1}^{n} A_i^2} \\sqrt{\\sum_{i=1}^{n} B_i^2}}$$\n",
+            "3. **Multi-turn Chatbot vs Static Form:**\n",
+            "   - The conversation manager maintains profile state across steps (Subjects &rarr; Daily Activities &rarr; Priority Values) and executes the ML vectorizer dynamically when profile data is sufficient.\n",
+            "4. **Aesthetic & Security Integration:**\n",
+            "   - 8-character password constraint strictly enforced.\n",
+            "   - Soothing liquid glassmorphism with Porsche typography and animated harmonic constellation canvas."
+        ]
+    }
+]
+
+notebook = {
+    "cells": cells,
+    "metadata": {
+        "kernelspec": {
+            "display_name": "Python 3",
+            "language": "python",
+            "name": "python3"
+        },
+        "language_info": {
+            "name": "python",
+            "version": "3.13.9"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 2
+}
+
+with open("DebrisCareers.ipynb", "w") as f:
+    json.dump(notebook, f, indent=2)
+
+print("Regenerated DebrisCareers.ipynb with NLP + TF-IDF & Cosine Similarity ML Engine!")
