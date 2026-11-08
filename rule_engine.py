@@ -3,7 +3,7 @@ Debris Careers - NLP + Machine Learning Career Recommendation Engine
 Combines:
 1. TF-IDF Vectorization & Cosine Similarity for personalized ML recommendation.
 2. Rule-based structured knowledge retrieval (Colleges, Courses, Hiring Companies, Next Steps).
-3. Conversational Profiler (Extracts Interests, Skills, Work Style & Priority: Salary/Impact/Creativity/Stability).
+3. Conversational AI Consultant (Pure natural input -> Intelligent relevant answer, Zero forced MCQs).
 100% Offline, Local ML with scikit-learn & pandas.
 """
 
@@ -23,7 +23,7 @@ CAREERS_DATA = [
         "stream": "non_medical",
         "level": "Graduation & Masters",
         "description": "Applies mathematics, statistical modeling, machine learning, and computer programming to extract intelligence from complex datasets, build predictive AI systems, and guide high-stakes business strategy.",
-        "interests": "mathematics, computers, machine learning, artificial intelligence, statistics, algorithms, logical reasoning, data analysis, deep learning, prediction",
+        "interests": "mathematics, computers, machine learning, artificial intelligence, statistics, algorithms, logical reasoning, data analysis, deep learning, prediction, ai, quant",
         "skills": "Python, SQL, Probability, Machine Learning, Data Visualization, Problem Solving",
         "priorities": "salary, high paying, innovation, analytical problem solving, intellectual challenge",
         "education": "B.Tech in Computer Science / AI / Data Science, B.Sc Statistics, M.Tech / MS in Data Science",
@@ -45,12 +45,13 @@ CAREERS_DATA = [
             "WorldQuant, Tower Research Capital, Goldman Sachs",
             "Fractal Analytics, Mu Sigma"
         ],
+        "entrance_exams": "JEE Main, JEE Advanced, ISI Admission Test, GATE",
         "recommended_next_steps": [
-            "Master Python and essential libraries (NumPy, Pandas, Scikit-Learn)",
+            "Master Python and essential data libraries (NumPy, Pandas, Scikit-Learn)",
             "Build strong foundations in Linear Algebra, Probability, and Multivariate Calculus",
-            "Learn SQL and database querying for real-world datasets",
+            "Learn SQL and database querying for large real-world datasets",
             "Create end-to-end data analysis and machine learning portfolio projects on Kaggle or GitHub",
-            "Prepare for engineering entrance tests (JEE Main/Advanced, ISI Admission Test)"
+            "Target entrance tests (JEE Main/Advanced, ISI Admission Test) for top institutions"
         ]
     },
     {
@@ -59,7 +60,7 @@ CAREERS_DATA = [
         "stream": "non_medical",
         "level": "Graduation",
         "description": "Designs, develops, tests, and architects scalable software systems, web applications, cloud infrastructure, and low-latency distributed systems.",
-        "interests": "coding, computers, software, web development, app development, algorithms, system design, problem solving, technology, building products",
+        "interests": "coding, computers, software, web development, app development, algorithms, system design, problem solving, technology, building products, programming, computer science, cse",
         "skills": "Data Structures, Algorithms, Python, Java, C++, Cloud Platforms (AWS/GCP), System Design",
         "priorities": "salary, job stability, high paying, career growth, building technology",
         "education": "B.Tech / B.E. in Computer Science & Engineering, BCA + MCA",
@@ -82,6 +83,7 @@ CAREERS_DATA = [
             "Atlassian, Adobe, Salesforce",
             "Directi, DE Shaw, Arcesium"
         ],
+        "entrance_exams": "JEE Main, JEE Advanced, BITSAT",
         "recommended_next_steps": [
             "Choose a core language: C++, Java, or Python, and master fundamentals",
             "Solve Data Structures & Algorithms problems consistently on LeetCode / Codeforces",
@@ -96,7 +98,7 @@ CAREERS_DATA = [
         "stream": "non_medical",
         "level": "Graduation",
         "description": "Protects digital networks, computer infrastructure, cloud systems, and confidential intelligence from cyber attacks, vulnerabilities, and espionage.",
-        "interests": "computers, security, ethical hacking, cyber defense, investigation, cryptography, forensics, network defense, curiosity",
+        "interests": "computers, security, ethical hacking, cyber defense, investigation, cryptography, forensics, network defense, curiosity, cyber, hacker",
         "skills": "Network Security, Penetration Testing, Linux, Cryptography, Wireshark, SIEM",
         "priorities": "job stability, salary, impact, high paying, intelligence, defense",
         "education": "B.Tech in Computer Science / Cybersecurity, B.Sc IT / Cyber Defense, Certifications (CEH, OSCP)",
@@ -118,6 +120,7 @@ CAREERS_DATA = [
             "Deloitte, PwC, EY, KPMG (Cyber Advisory)",
             "National Cyber Security Agencies, Intelligence Wings"
         ],
+        "entrance_exams": "JEE Main, State CETs",
         "recommended_next_steps": [
             "Understand computer networking basics (TCP/IP, OSI, DNS, routing)",
             "Set up a Linux home lab and experiment with tools like Nmap, Wireshark, and Burp Suite",
@@ -132,7 +135,7 @@ CAREERS_DATA = [
         "stream": "commerce",
         "level": "Graduation & Professional",
         "description": "Manages corporate financial auditing, tax compliance, corporate restructuring, forensic balance sheet examination, and statutory financial governance.",
-        "interests": "accounts, accounting, mathematics, balance sheet, tax, taxation, auditing, audit, finance, corporate law, business numbers, precision",
+        "interests": "accounts, accounting, mathematics, balance sheet, tax, taxation, auditing, audit, finance, corporate law, business numbers, precision, ca, gst",
         "skills": "Auditing, Financial Accounting, GST/Direct Taxation, Financial Modeling, Analytical Precision",
         "priorities": "salary, prestige, high paying, job stability, corporate authority",
         "education": "ICAI Qualification (Foundation, Inter, Articleship, Final) concurrently with B.Com (Hons)",
@@ -140,7 +143,8 @@ CAREERS_DATA = [
             "Institute of Chartered Accountants of India (ICAI - Governing Body)",
             "SRCC (Shri Ram College of Commerce), Delhi University",
             "Loyola College, Chennai",
-            "St. Xavier's College, Kolkata / Mumbai"
+            "St. Xavier's College, Kolkata / Mumbai",
+            "Hansraj College & Hindu College, Delhi"
         ],
         "top_fields": [
             "Statutory & Forensic Financial Auditing",
@@ -154,6 +158,7 @@ CAREERS_DATA = [
             "Goldman Sachs, Morgan Stanley",
             "Reliance Industries, Tata Sons, Aditya Birla Group"
         ],
+        "entrance_exams": "CA Foundation, CUET-UG (for top Commerce colleges)",
         "recommended_next_steps": [
             "Register for the ICAI CA Foundation examination right after Class 12",
             "Enroll in B.Com (Hons) at a premier commerce university via CUET",
@@ -168,7 +173,7 @@ CAREERS_DATA = [
         "stream": "commerce",
         "level": "Graduation & Masters",
         "description": "Advises Fortune 500 corporations, institutions, and governments on initial public offerings (IPOs), multi-billion-dollar mergers, corporate debt raising, and stock valuation.",
-        "interests": "finance, stock market, investment, trading, equity, wall street, banking, valuation, mergers, acquisitions, economy, money, business",
+        "interests": "finance, stock market, investment, trading, equity, wall street, banking, valuation, mergers, acquisitions, economy, money, business, financial markets",
         "skills": "Financial Modeling, DCF Valuation, Pitchbook Design, Corporate Finance, Excel mastery",
         "priorities": "salary, high paying, prestige, wealth, rapid career progression",
         "education": "B.Com (Hons) / B.A. Economics & MBA Finance / CFA (Chartered Financial Analyst)",
@@ -190,6 +195,7 @@ CAREERS_DATA = [
             "Blackstone, KKR, Sequoia Capital / Peak XV",
             "Avendus Capital, Kotak Investment Banking"
         ],
+        "entrance_exams": "CUET-UG, CAT, GMAT, CFA Program",
         "recommended_next_steps": [
             "Learn Financial Modeling (Discounted Cash Flow, Comparable Company Analysis) in Excel",
             "Follow capital market trends, corporate earnings calls, and Bloomberg/FT reports daily",
@@ -204,7 +210,7 @@ CAREERS_DATA = [
         "stream": "medical",
         "level": "Graduation & Residency",
         "description": "Diagnoses clinical diseases, performs life-saving surgeries, manages trauma care, and provides patient healthcare in clinical settings and tertiary super-speciality hospitals.",
-        "interests": "biology, human body, medicine, doctor, cure, disease, surgery, healing, hospital, patient, healthcare, science, empathy",
+        "interests": "biology, human body, medicine, doctor, cure, disease, surgery, healing, hospital, patient, healthcare, science, empathy, mbbs, clinical",
         "skills": "Clinical Diagnosis, Surgical Precision, Emergency Care, Pharmacology, Empathy",
         "priorities": "impact, helping people, job stability, prestige, salary, noble profession",
         "education": "MBBS (Bachelor of Medicine & Surgery) + MD/MS / DM/M.Ch Super-specialization",
@@ -212,7 +218,8 @@ CAREERS_DATA = [
             "AIIMS (All India Institute of Medical Sciences), New Delhi",
             "Christian Medical College (CMC), Vellore",
             "Armed Forces Medical College (AFMC), Pune",
-            "JIPMER Puducherry & KGMU Lucknow"
+            "JIPMER Puducherry & KGMU Lucknow",
+            "Kasturba Medical College (KMC), Manipal"
         ],
         "top_fields": [
             "Interventional Cardiology & Cardiac Surgery",
@@ -226,6 +233,7 @@ CAREERS_DATA = [
             "Fortis Healthcare, Medanta - The Medicity",
             "World Health Organization (WHO), Red Cross"
         ],
+        "entrance_exams": "NEET-UG, NEET-PG / INI-CET",
         "recommended_next_steps": [
             "Focus intensively on Biology, Chemistry, and Physics in high school",
             "Prepare for the national NEET-UG medical entrance examination",
@@ -240,7 +248,7 @@ CAREERS_DATA = [
         "stream": "medical",
         "level": "Graduation & Masters",
         "description": "Researches active chemical compounds, formulates life-saving medications, conducts clinical trials, and oversees pharmaceutical manufacturing standards.",
-        "interests": "chemistry, biology, drugs, medicine making, pharmacy, drug discovery, clinical research, science, laboratory, health",
+        "interests": "chemistry, biology, drugs, medicine making, pharmacy, drug discovery, clinical research, science, laboratory, health, b.pharm",
         "skills": "Organic Chemistry, Drug Formulation, HPLC Chromatography, Clinical Trial Analysis",
         "priorities": "impact, job stability, science, research, salary",
         "education": "B.Pharm (Bachelor of Pharmacy), M.Pharm, Pharm.D, Ph.D in Pharmaceutical Sciences",
@@ -262,6 +270,7 @@ CAREERS_DATA = [
             "Pfizer Global Research, Novartis, AstraZeneca",
             "Serum Institute of India, Biocon"
         ],
+        "entrance_exams": "State CETs, BITSAT, GPAT",
         "recommended_next_steps": [
             "Strengthen knowledge in Organic Chemistry, Biochemistry, and Human Physiology",
             "Take pharmacy entrance tests (State CETs, BITSAT, NEET)",
@@ -276,7 +285,7 @@ CAREERS_DATA = [
         "stream": "humanities",
         "level": "Graduation",
         "description": "Negotiates high-stakes corporate contracts, guides cross-border mergers, safeguards intellectual property rights, and represents clients in judicial arbitrations.",
-        "interests": "law, justice, debate, argumentation, court, advocacy, legal, reading, writing, rules, constitution, corporate deals, politics",
+        "interests": "law, justice, debate, argumentation, court, advocacy, legal, reading, writing, rules, constitution, corporate deals, politics, lawyer, judiciary",
         "skills": "Contract Drafting, Legal Research, Cross-Examination, Negotiation, Statutory Interpretation",
         "priorities": "salary, prestige, high paying, intellectual challenge, authority",
         "education": "5-Year Integrated B.A. LLB / BBA LLB (Hons), LL.M",
@@ -298,6 +307,7 @@ CAREERS_DATA = [
             "Khaitan & Co, Trilegal",
             "In-House Counsel at Google, Apple, Reliance Industries"
         ],
+        "entrance_exams": "CLAT (Common Law Admission Test), AILET",
         "recommended_next_steps": [
             "Read legal precedents, constitutional landmarks, and business law developments daily",
             "Prepare for the CLAT (Common Law Admission Test) and AILET entrance exams",
@@ -312,7 +322,7 @@ CAREERS_DATA = [
         "stream": "humanities",
         "level": "Graduation",
         "description": "Blends human psychology, visual aesthetics, typography, and interaction architecture to design seamless mobile applications, web experiences, and physical consumer products.",
-        "interests": "design, art, creativity, visual, drawing, ui, ux, graphics, aesthetics, human psychology, sketching, colors, interfaces",
+        "interests": "design, art, creativity, visual, drawing, ui, ux, graphics, aesthetics, human psychology, sketching, colors, interfaces, product design, animation",
         "skills": "User Research, Wireframing, Figma, Design Systems, Usability Testing, Visual Prototyping",
         "priorities": "creativity, innovation, salary, high paying, work life balance",
         "education": "B.Des (Bachelor of Design) in Interaction / Industrial Design, B.Arch, M.Des",
@@ -334,6 +344,7 @@ CAREERS_DATA = [
             "Zomato, Swiggy, CRED Product Teams",
             "Ogilvy, Pentagram, IDEO"
         ],
+        "entrance_exams": "UCEED, NID-DAT, NIFT Entrance",
         "recommended_next_steps": [
             "Master design industry tools: Figma, Illustrator, and prototyping frameworks",
             "Study human-computer interaction (HCI) and cognitive design psychology principles",
@@ -348,7 +359,7 @@ CAREERS_DATA = [
         "stream": "humanities",
         "level": "Graduation",
         "description": "Administers district governance, formulates national socio-economic policy, enforces law and order, and represents the sovereign nation in foreign diplomacy.",
-        "interests": "civil services, upsc, ias, ips, government, administration, policy, society, public welfare, diplomacy, leadership, politics, change",
+        "interests": "civil services, upsc, ias, ips, government, administration, policy, society, public welfare, diplomacy, leadership, politics, change, district collector",
         "skills": "Public Policy Analysis, Administrative Decision Making, Crisis Leadership, Ethics, General Studies",
         "priorities": "impact, leadership, prestige, helping people, public authority, job stability",
         "education": "Graduation in any discipline (B.A. Political Science / History / Economics / B.Tech / MBBS)",
@@ -370,6 +381,7 @@ CAREERS_DATA = [
             "United Nations Development Programme (UNDP), World Bank Missions",
             "NITI Aayog & Think Tanks"
         ],
+        "entrance_exams": "UPSC Civil Services Examination (Prelims, Mains, Interview)",
         "recommended_next_steps": [
             "Read national newspapers (The Hindu / Indian Express) and economic surveys analytically",
             "Pursue a rigorous bachelor's degree in Social Sciences or your chosen optional field",
@@ -380,26 +392,18 @@ CAREERS_DATA = [
     }
 ]
 
-# Convert to Pandas DataFrame for efficient vectorization and queries
 DF_CAREERS = pd.DataFrame(CAREERS_DATA)
 
 # ---------------------------------------------------------------------------
-# 2. NLP + TF-IDF Vectorization & Cosine Similarity ML Recommendation Engine
+# 2. NLP + TF-IDF Vectorization & Cosine Similarity ML Engine
 # ---------------------------------------------------------------------------
 class CareerNLPEngine:
-    """
-    NLP & Machine Learning Recommendation Engine.
-    Uses TF-IDF Vectorization to build numerical representations of student input
-    and career profiles, then calculates Cosine Similarity scores to rank recommendations.
-    """
     def __init__(self):
-        # Create a rich semantic corpus string for each career
         self.career_corpus = []
         for idx, row in DF_CAREERS.iterrows():
             combined = f"{row['title']} {row['description']} {row['interests']} {row['skills']} {row['priorities']} {row['education']}"
             self.career_corpus.append(combined.lower())
 
-        # Fit TF-IDF Vectorizer with n-grams (1, 2) to capture phrases like 'machine learning', 'high paying'
         self.vectorizer = TfidfVectorizer(
             stop_words='english',
             ngram_range=(1, 2),
@@ -408,10 +412,6 @@ class CareerNLPEngine:
         self.career_matrix = self.vectorizer.fit_transform(self.career_corpus)
 
     def extract_student_attributes(self, text: str) -> dict:
-        """
-        NLP Information Extraction Stage (Step 1):
-        Identifies key interest domains, technical skills, and career priorities.
-        """
         text_lower = text.lower()
         extracted = {
             "interests": [],
@@ -438,38 +438,35 @@ class CareerNLPEngine:
         if any(w in text_lower for w in ["math", "mathematics", "calculus", "stats", "statistics", "numbers"]):
             extracted["interests"].append("Mathematics & Quantitative Modeling")
             extracted["summary_points"].append("You have strong enthusiasm for mathematics, numbers, and logic.")
-        if any(w in text_lower for w in ["computer", "computers", "coding", "code", "programming", "software", "tech"]):
+        if any(w in text_lower for w in ["computer", "computers", "coding", "code", "programming", "software", "tech", "sde", "developer"]):
             extracted["interests"].append("Computers & Software Engineering")
             extracted["summary_points"].append("You enjoy computing technology and building software.")
-        if any(w in text_lower for w in ["account", "accounting", "tax", "audit", "balance sheet", "finance", "stock"]):
+        if any(w in text_lower for w in ["account", "accounting", "tax", "audit", "balance sheet", "finance", "stock", "ca", "gst"]):
             extracted["interests"].append("Finance, Accounts & Commercial Markets")
             extracted["summary_points"].append("You have a keen interest in finance, corporate accounts, and markets.")
-        if any(w in text_lower for w in ["biology", "medicine", "doctor", "cure", "health", "hospital", "pharma"]):
+        if any(w in text_lower for w in ["biology", "medicine", "doctor", "cure", "health", "hospital", "pharma", "mbbs"]):
             extracted["interests"].append("Medical, Life Sciences & Healthcare")
             extracted["summary_points"].append("You are fascinated by life sciences, medicine, and healthcare.")
-        if any(w in text_lower for w in ["law", "debate", "justice", "court", "legal", "constitution", "argument"]):
+        if any(w in text_lower for w in ["law", "debate", "justice", "court", "legal", "constitution", "argument", "lawyer"]):
             extracted["interests"].append("Law, Justice & Constitutional Advocacy")
             extracted["summary_points"].append("You are stimulated by legal argumentation, debate, and justice.")
         if any(w in text_lower for w in ["security", "hack", "hacking", "cyber", "defense", "investigat"]):
             extracted["interests"].append("Cyber Defense & Network Investigation")
             extracted["summary_points"].append("You are intrigued by cybersecurity, ethical hacking, and defense.")
+        if any(w in text_lower for w in ["design", "ui", "ux", "graphics", "product design"]):
+            extracted["interests"].append("UI/UX & Product Design")
+            extracted["summary_points"].append("You are excited by digital interfaces, aesthetics, and user experience.")
+        if any(w in text_lower for w in ["upsc", "ias", "ips", "civil services", "government"]):
+            extracted["interests"].append("Public Administration & Civil Services")
+            extracted["summary_points"].append("You are aiming for public leadership and administrative service.")
 
         return extracted
 
     def recommend(self, student_profile_text: str, top_k: int = 3) -> list:
-        """
-        Step 2 & 3:
-        1. Vectorizes student input text using TF-IDF.
-        2. Calculates Cosine Similarity with all careers in database.
-        3. Ranks and returns top_k recommendations with similarity scores and breakdown.
-        """
         cleaned_text = student_profile_text.lower().strip()
         student_vec = self.vectorizer.transform([cleaned_text])
 
-        # Cosine Similarity Calculation
         similarity_scores = cosine_similarity(student_vec, self.career_matrix)[0]
-
-        # Get sorted indices in descending order
         top_indices = np.argsort(similarity_scores)[::-1][:top_k]
 
         recommendations = []
@@ -486,233 +483,388 @@ class CareerNLPEngine:
         return recommendations
 
 
-# Initialize singleton instance of the ML engine
 NLP_ENGINE = CareerNLPEngine()
 
 
 # ---------------------------------------------------------------------------
-# 3. Conversational State Manager (Chatbot Conversation Flow)
+# 3. Conversational AI Career Consultant (No MCQs, Pure Input-driven advisory)
 # ---------------------------------------------------------------------------
 class ConversationalCareerBot:
     """
-    Coordinates conversational dialogue, questions, and triggers the ML recommendation engine.
-    Ensures a real multi-turn chatbot experience rather than a one-off form.
+    Intelligent Career Consultant:
+    - Waits for the student's input.
+    - Evaluates natural queries, interest descriptions, specific questions, or stream inquiries.
+    - Delivers deeply relevant, structured answers (Colleges, Courses, Recruiters, Next Steps).
+    - NEVER forces multiple choice questions or quiz stages!
     """
 
-    CONVERSATION_STAGES = [
-        "stage_ask_subjects",
-        "stage_ask_activities",
-        "stage_ask_priority",
-        "stage_completed"
-    ]
-
     @classmethod
-    def get_initial_greeting(cls):
+    def get_welcome_response(cls):
+        """
+        Initial greeting for empty state.
+        Options list is empty - no MCQ buttons!
+        """
         text = """### Welcome to Debris Careers AI 🏛️
 
-I am your **NLP & Machine Learning Career Consultant**. 
+I am your **AI & NLP Career Consultant**. 
 
-Unlike simple keyword bots or generic LLMs, I use **Natural Language Processing (NLP)** and **TF-IDF Vectorization with Cosine Similarity** to mathematically match your unique interests, skills, and values against verified career trajectories.
+Tell me about your **favourite subjects, skills, interests, or career ambitions** in your own words, and I'll analyze the optimal career trajectories, premier colleges, and top hiring companies for you.
 
----
-
-#### Let's begin building your profile:
-**What academic subjects or fields do you genuinely enjoy?**  
-*(For example: "I like mathematics and computers", or "I enjoy biology and chemistry", or "I like accounts and economics")*
+*(For example: "I am interested in accounts and finance", or "I like coding, math, and want a high-paying job", or "Tell me about law colleges and careers")*
 """
-        options = [
-            "Mathematics & Computers",
-            "Biology & Medicine",
-            "Accounts & Economics",
-            "Art, Design & Psychology",
-            "Law, Debate & Politics"
-        ]
-        return text, {"stage": "stage_ask_subjects", "profile_answers": []}, options
+        return text, []
 
     @classmethod
     def process_chat_message(cls, user_message: str, current_state: dict):
-        """
-        Handles user input through conversational stages or on-demand natural prompts.
-        """
         text = user_message.strip()
         text_lower = text.lower()
 
-        # Check for system navigation commands
+        if not text:
+            return "Please type a subject, skill, or career question you would like to explore.", current_state, []
+
+        # 1. System Navigation Commands
         if text_lower in ["restart", "reset", "clear", "home", "start over"]:
-            return cls.get_initial_greeting()
+            welcome_text, _ = cls.get_welcome_response()
+            return welcome_text, {}, []
 
         if text_lower in ["help", "commands"]:
-            help_text = """### Debris Careers — How to Use
-- **Natural Profiling:** You can describe your interests in complete sentences:  
-  *e.g. "I like mathematics, computers, and solving logical problems. I want a high-paying job."*
-- **Conversational Guide:** Follow my step-by-step questions on your subjects, favourite activities, and career priorities.
-- **Commands:** Type `restart` at any time to begin a fresh profile evaluation.
+            help_text = """### Debris Careers AI — Guide
+You can ask me anything about careers, academic streams, degrees, colleges, and jobs:
+- **Describe your profile:** *"I like mathematics, computers, and solving logical problems. I want a high-paying job."*
+- **Explore a specific field:** *"I am interested in accounts"*, *"Tell me about UI/UX design"*, *"How to become a doctor?"*
+- **Ask specific questions:** *"Which colleges are best for B.Tech CSE?"*, *"What entrance exams are needed for law?"*, *"Top recruiters for data scientists?"*
 """
-            return help_text, current_state, ["Restart", "I like mathematics & computers", "I like accounts & finance"]
+            return help_text, current_state, []
 
-        # If user provides a comprehensive multi-intent prompt directly
-        # (e.g. "I like mathematics, computers, and solving logical problems. I want a high-paying job.")
-        word_count = len(text.split())
-        extracted_info = NLP_ENGINE.extract_student_attributes(text)
-        has_multiple_attributes = (len(extracted_info["interests"]) + len(extracted_info["priorities"])) >= 2
+        # 2. Greetings
+        if text_lower in ["hello", "hi", "hey", "good morning", "good evening", "greetings"]:
+            reply = """### Hello! Welcome to Debris Careers 👋
 
-        if word_count >= 6 and has_multiple_attributes:
-            return cls._generate_ml_recommendation_card(text, current_state)
+I'm your AI consultant. I'm ready whenever you are! 
 
-        # Multi-turn Conversational Flow
-        stage = current_state.get("stage", "stage_ask_subjects")
-        profile_answers = current_state.get("profile_answers", [])
-
-        if stage == "stage_ask_subjects":
-            profile_answers.append(text)
-            new_state = {
-                "stage": "stage_ask_activities",
-                "profile_answers": profile_answers
-            }
-            reply = f"""Got it! You enjoy **"{text}"**.
-
-#### Question 2 of 3:
-**What specific tasks or activities do you enjoy doing most?**  
-*(For example: "Coding and building software", "Solving mathematical problems", "Managing accounts & balance sheets", "Designing visual layouts", or "Treating and helping patients")*
+Tell me about your **interests, subjects you enjoy, or questions about any career field**, and I'll give you a detailed breakdown of degrees, top colleges, and recruiting companies.
 """
-            options = [
-                "Coding & building software",
-                "Solving complex logical & math problems",
-                "Auditing accounts & financial analysis",
-                "Creative UI/UX & visual sketching",
-                "Debate, legal advocacy & justice",
-                "Clinical patient care & biology research"
-            ]
-            return reply, new_state, options
+            return reply, current_state, []
 
-        elif stage == "stage_ask_activities":
-            profile_answers.append(text)
-            new_state = {
-                "stage": "stage_ask_priority",
-                "profile_answers": profile_answers
-            }
-            reply = f"""Noted!
+        # 3. Direct domain / keyword search
+        direct_career = cls._match_direct_career_intent(text_lower)
+        if direct_career:
+            reply = cls._format_single_career_card(direct_career, user_query=text)
+            return reply, {"last_career": direct_career["id"]}, []
 
-#### Final Question:
-**What matters most to you in your future career?**  
-• **Salary & Earning Potential** (High-paying corporate/tech growth)  
-• **Job Stability & Security** (Reliable long-term career tenure)  
-• **Creativity & Design Freedom** (Expressing original ideas)  
-• **Social Impact & Public Good** (Helping people and society)
+        # 4. Stream-level guidance
+        stream_reply = cls._check_stream_guidance(text_lower)
+        if stream_reply:
+            return stream_reply, current_state, []
+
+        # 5. Specific question handling (e.g., colleges, skills, salary, entrance exams)
+        specific_answer = cls._answer_targeted_question(text_lower, current_state)
+        if specific_answer:
+            return specific_answer, current_state, []
+
+        # 6. Natural multi-attribute profile scoring via TF-IDF & Cosine Similarity
+        reply = cls._generate_ml_recommendation_card(text, current_state)
+        return reply, {"last_query": text}, []
+
+    @classmethod
+    def _match_direct_career_intent(cls, text_lower: str):
+        """Matches direct field intent (e.g. 'accounts', 'coding', 'doctor', 'law', etc.)."""
+        # Keyword mappings to career ids
+        mappings = [
+            (["account", "accounts", "accounting", "ca", "chartered accountant", "auditing", "taxation", "balance sheet", "gst"], "chartered_accountant"),
+            (["data scientist", "data science", "machine learning", "ai engineer", "artificial intelligence", "predictive model"], "data_scientist"),
+            (["software", "developer", "coding", "programmer", "programming", "web dev", "app dev", "sde", "computer science"], "software_engineer"),
+            (["cybersecurity", "cyber", "ethical hacking", "hacker", "network security", "infosec", "penetration testing"], "cybersecurity_analyst"),
+            (["investment bank", "investment banking", "equity research", "stock market", "wall street", "portfolio manager", "trading"], "investment_banker"),
+            (["doctor", "mbbs", "medicine", "surgeon", "physician", "clinical", "hospital", "patient care"], "medical_physician"),
+            (["pharmacy", "pharmacist", "drug discovery", "pharmaceutical", "b.pharm", "medicine making"], "pharmacist_scientist"),
+            (["law", "lawyer", "advocate", "judge", "judiciary", "legal", "court", "llb", "nlu"], "corporate_lawyer"),
+            (["ui", "ux", "ui/ux", "product design", "designer", "graphic design", "figma", "visual design"], "ui_ux_product_designer"),
+            (["upsc", "ias", "ips", "civil services", "district collector", "diplomat", "ifs", "civil servant"], "civil_servant_upsc")
+        ]
+
+        for keywords, career_id in mappings:
+            for kw in keywords:
+                if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
+                    for c in CAREERS_DATA:
+                        if c["id"] == career_id:
+                            return c
+        return None
+
+    @classmethod
+    def _check_stream_guidance(cls, text_lower: str):
+        """Checks if student is asking for high-level stream overview."""
+        if any(k in text_lower for k in ["non-medical", "non medical", "engineering stream", "stem"]):
+            return """### Non-Medical & Engineering Pathways ⚙️
+
+Driven by mathematics, computing, and physical sciences. Here are the premier avenues:
+
+1. **Computer Science & Artificial Intelligence (B.Tech CSE/AI):**  
+   Software Engineering, Distributed Systems, Data Science, and Machine Learning.
+   *Colleges:* IIT Bombay, IIT Delhi, BITS Pilani, IIIT Hyderabad.  
+   *Recruiters:* Google, Microsoft, NVIDIA, Amazon.
+
+2. **Electronics & Communication (ECE / VLSI):**  
+   Semiconductor chip design, robotics, and embedded systems.
+   *Colleges:* IIT Kharagpur, BITS Pilani, NIT Warangal.  
+   *Recruiters:* Qualcomm, Intel, Texas Instruments.
+
+3. **Data Science & Quantitative Mathematics (B.Sc / ISI):**  
+   Algorithmic trading, statistical modeling, and quantitative analytics.
+   *Colleges:* ISI Kolkata, CMI, IISc Bangalore.  
+   *Recruiters:* WorldQuant, Tower Research, Goldman Sachs.
+
+*Tell me what specific domain or subjects inside Non-Medical you enjoy, and I'll give you a tailored plan!*
 """
-            options = [
-                "High Salary & Earning Potential",
-                "Job Stability & Career Security",
-                "Creativity & Innovation",
-                "Social Impact & Helping People"
-            ]
-            return reply, new_state, options
 
-        elif stage == "stage_ask_priority":
-            profile_answers.append(text)
-            combined_profile = " ".join(profile_answers)
-            return cls._generate_ml_recommendation_card(combined_profile, current_state)
+        if any(k in text_lower for k in ["medical stream", "biology stream", "medical options", "after 12th medical"]):
+            return """### Medical & Healthcare Sciences Pathways 🩺
 
-        else:
-            # When completed or general query, run recommendation on current input
-            return cls._generate_ml_recommendation_card(text, current_state)
+Dedicated to life sciences, clinical care, pharmaceuticals, and healing. Core avenues:
+
+1. **Clinical Medicine & Surgery (MBBS & MD/MS):**  
+   The premier route to becoming a physician, surgeon, or clinical specialist.  
+   *Colleges:* AIIMS New Delhi, CMC Vellore, JIPMER, KMC Manipal.  
+   *Recruiters:* Apollo Hospitals, Max Super Speciality, Fortis Healthcare.
+
+2. **Pharmaceutical Sciences (B.Pharm & M.Pharm):**  
+   Drug discovery, clinical trials, formulation, and quality assurance.  
+   *Colleges:* Jamia Hamdard, BITS Pilani, NIPER Mohali, ICT Mumbai.  
+   *Recruiters:* Sun Pharma, Dr. Reddy's, Pfizer, Cipla.
+
+3. **Biotechnology & Biomedical Research (B.Sc / B.Tech Biotech):**  
+   Genetic engineering, CRISPR vaccine development, and bioinformatics.  
+   *Colleges:* St. Xavier's, Loyola College, IISc Bangalore.  
+   *Recruiters:* Biocon, Syngene, Bharat Biotech.
+
+*Are you leaning towards clinical patient care or pharmaceutical research? Let me know!*
+"""
+
+        if any(k in text_lower for k in ["commerce stream", "business stream", "after 12th commerce"]):
+            return """### Commerce, Finance & Business Management Pathways 📈
+
+The backbone of capital markets, corporate balance sheets, and enterprise growth:
+
+1. **Chartered Accountancy (CA) & B.Com (Hons):**  
+   Statutory auditing, taxation, corporate financial restructuring, and CFO advisory.  
+   *Colleges:* ICAI + SRCC, LSR, Loyola College, St. Xavier's.  
+   *Recruiters:* Big 4 (Deloitte, PwC, EY, KPMG), BDO, Reliance, Tata Sons.
+
+2. **Investment Banking & Equity Markets (CFA / MBA Finance):**  
+   M&A advisory, IPOs, valuation, and capital allocation.  
+   *Colleges:* IIM Ahmedabad, IIM Bangalore, FMS Delhi.  
+   *Recruiters:* Goldman Sachs, Morgan Stanley, JP Morgan Chase.
+
+3. **Business Management (BBA / BMS / IPM):**  
+   Corporate strategy, brand management, operations, and leadership.  
+   *Colleges:* SSCBS Delhi, IIM Indore (IPM), NMIMS Mumbai.  
+   *Recruiters:* McKinsey, Bain & Company, HUL, P&G.
+
+*Tell me if you prefer accounting & auditing, stock markets & investment, or general business management!*
+"""
+
+        if any(k in text_lower for k in ["humanities", "arts stream", "after 12th arts"]):
+            return """### Humanities, Social Sciences, Law & Design Pathways ⚖️
+
+Focuses on human society, justice, public governance, creative expression, and media:
+
+1. **Corporate Law & Litigation (5-Year Integrated B.A. LLB):**  
+   Corporate M&A, intellectual property, constitutional litigation, and arbitration.  
+   *Colleges:* NLSIU Bengaluru, NALSAR Hyderabad, NLU Delhi.  
+   *Recruiters:* Shardul Amarchand, AZB & Partners, Google Legal, Trilegal.
+
+2. **UI/UX & Product Design (B.Des):**  
+   Interface design, visual design systems, and consumer product architecture.  
+   *Colleges:* NID Ahmedabad, IDC IIT Bombay, NIFT New Delhi.  
+   *Recruiters:* Apple, Google Design, Adobe, Swiggy, Zomato.
+
+3. **Civil Services & Public Governance (UPSC CSE):**  
+   District administration, national policy formulation, and diplomacy (IAS / IPS / IFS).  
+   *Colleges:* St. Stephen's, LSR, Miranda House, JNU.  
+   *Recruiters:* Government of India, State Governments, United Nations.
+
+*Which of these areas sparks your passion most? Tell me more!*
+"""
+        return None
+
+    @classmethod
+    def _answer_targeted_question(cls, text_lower: str, state: dict):
+        """Answers targeted questions about colleges, skills, salary, or exams for a previously mentioned or current career."""
+        # Find which career is relevant
+        target_career = None
+        for c in CAREERS_DATA:
+            if c["id"] in text_lower or any(kw in text_lower for kw in c["title"].lower().split("/")):
+                target_career = c
+                break
+
+        if not target_career and state.get("last_career"):
+            for c in CAREERS_DATA:
+                if c["id"] == state["last_career"]:
+                    target_career = c
+                    break
+
+        if not target_career:
+            return None
+
+        # Check question type
+        if any(q in text_lower for q in ["college", "colleges", "university", "institutes", "where to study"]):
+            colleges_md = "\n".join([f"  • **{col}**" for col in target_career["colleges"]])
+            return f"""### 🏛️ Premier Colleges for {target_career['title']}
+
+Here are the highest-ranked institutions known for faculty, research facilities, and campus recruitment in this domain:
+
+{colleges_md}
+
+**Primary Entrance Benchmark:** {target_career.get('entrance_exams', 'National / University Entrance Tests')}  
+**Recommended Degree:** {target_career['education']}
+"""
+
+        if any(q in text_lower for q in ["skill", "skills", "what do i need to learn", "requirements"]):
+            steps_md = "\n".join([f"{i}. {step}" for i, step in enumerate(target_career["recommended_next_steps"], 1)])
+            return f"""### 🎯 Key Skills & Learning Roadmap for {target_career['title']}
+
+**Core Technical & Professional Skills:**  
+`{target_career['skills']}`
+
+**Recommended Sequential Next Steps:**  
+{steps_md}
+"""
+
+        if any(q in text_lower for q in ["company", "companies", "recruiters", "who hires", "jobs"]):
+            companies_md = "\n".join([f"  • **{cmp}**" for cmp in target_career["companies"]])
+            fields_md = "\n".join([f"  • {f}" for f in target_career["top_fields"]])
+            return f"""### 🏢 Top Recruiters & Career Roles for {target_career['title']}
+
+**Active Hiring Organizations:**  
+{companies_md}
+
+**High-Demand Specializations & Target Job Profiles:**  
+{fields_md}
+"""
+
+        if any(q in text_lower for q in ["exam", "entrance", "admission"]):
+            return f"""### 📝 Admission & Entrance Exams for {target_career['title']}
+
+**Benchmark Entrance Examinations:**  
+`{target_career.get('entrance_exams', 'National & State Level Admissions')}`
+
+**Target Degree Pathway:**  
+{target_career['education']}
+
+*Make sure to prepare syllabus fundamentals and track official application windows early!*
+"""
+
+        return None
+
+    @classmethod
+    def _format_single_career_card(cls, career: dict, user_query: str = ""):
+        """Renders a comprehensive, clean, professional advisory card for a specific career."""
+        colleges_md = "\n".join([f"  • {c}" for c in career["colleges"]])
+        fields_md = "\n".join([f"  • {f}" for f in career["top_fields"]])
+        companies_md = "\n".join([f"  • {cmp}" for cmp in career["companies"]])
+        steps_md = "\n".join([f"{i}. {step}" for i, step in enumerate(career["recommended_next_steps"], 1)])
+
+        card = f"""### Career Advisory: {career['title']}
+
+> {career['description']}
+
+---
+
+#### 🎓 Recommended Degree & Pathways:
+**{career['education']}**  
+*(Entrance Benchmark: {career.get('entrance_exams', 'National Admissions')})*
+
+#### 🏛️ Top Tier Colleges & Institutes:
+{colleges_md}
+
+#### 🎯 High-Demand Specializations & Skills:
+{fields_md}  
+*Key Skills:* `{career['skills']}`
+
+#### 🏢 Top Recruiting Companies & Organizations:
+{companies_md}
+
+---
+
+#### 🚀 Recommended Actionable Next Steps:
+{steps_md}
+"""
+        return card
 
     @classmethod
     def _generate_ml_recommendation_card(cls, full_student_text: str, state: dict):
         """
-        Runs Step 1 through Step 5 of the ML Recommendation Pipeline.
+        Runs NLP extraction + TF-IDF Vectorization & Cosine Similarity ranking.
         """
-        # Step 1: NLP Extraction
         extracted = NLP_ENGINE.extract_student_attributes(full_student_text)
-        
-        # Step 2, 3, 4: TF-IDF Vectorization, Cosine Similarity, and Ranking
         top_recs = NLP_ENGINE.recommend(full_student_text, top_k=3)
         primary_match = top_recs[0]
         primary_career = primary_match["career"]
 
-        # Step 5: Explain the Recommendation with Verified Templates
         summary_bullets = ""
         if extracted["summary_points"]:
             summary_bullets = "\n".join([f"  • {p}" for p in extracted["summary_points"]])
         else:
-            summary_bullets = f"  • Matched keywords and contextual patterns in your response: *\"{full_student_text[:80]}...\"*"
+            summary_bullets = f"  • Analyzed keywords and domain context from your query: *\"{full_student_text[:80]}...\"*"
 
-        # Format Top 3 Ranking Table
         ranking_rows = []
         for r in top_recs:
             score_bar = "█" * int(r["score"] * 10) + "░" * (10 - int(r["score"] * 10))
             ranking_rows.append(f"| **#{r['rank']}** | **{r['career']['title']}** | `{r['score']}` ({r['score_percent']}%) | `{score_bar}` |")
         ranking_table = "\n".join(ranking_rows)
 
-        # Format Next Steps
         steps_formatted = "\n".join([f"{i}. {step}" for i, step in enumerate(primary_career["recommended_next_steps"], 1)])
         colleges_formatted = "\n".join([f"  • {c}" for c in primary_career["colleges"]])
         fields_formatted = "\n".join([f"  • {f}" for f in primary_career["top_fields"]])
         companies_formatted = "\n".join([f"  • {cmp}" for cmp in primary_career["companies"]])
 
-        reply = f"""### 🎯 NLP & Machine Learning Career Match Results
+        reply = f"""### 🎯 Career Match Analysis (NLP & Machine Learning)
 
-We analyzed your input profile through **TF-IDF Vectorization** and evaluated **Cosine Similarity** against our verified career database.
+We analyzed your query through **TF-IDF Vectorization** and calculated **Cosine Similarity** against our verified institutional database.
 
 ---
 
-#### 📊 Ranked Career Matches (Cosine Similarity Scores):
-| Rank | Recommended Career | Similarity Score | Confidence Match |
+#### 📊 Ranked Career Matches:
+| Rank | Recommended Career | Similarity Score | Match Level |
 | :---: | :--- | :---: | :--- |
 {ranking_table}
 
 ---
 
 ### 🏆 Top Recommended Match: **{primary_career['title']}**
-*(Calculated Similarity Score: **{primary_match['score']}** / 1.00)*
+*(Similarity Score: **{primary_match['score']}** / 1.00)*
 
-> **Why this career matches your profile:**  
+> **Why this career matches your input:**  
 {summary_bullets}
 
 **Academic Eligibility & Pathways:**  
-{primary_career['education']}
+{primary_career['education']}  
+*(Entrance Benchmark: {primary_career.get('entrance_exams', 'National Tests')})*
 
 ---
 
 #### 🏛️ Top Tier Colleges & Institutes:
 {colleges_formatted}
 
-#### 🎯 High-Demand Specializations:
-{fields_formatted}
+#### 🎯 High-Demand Specializations & Skills:
+{fields_formatted}  
+*Key Skills:* `{primary_career['skills']}`
 
 #### 🏢 Top Recruiting Companies & Organizations:
 {companies_formatted}
 
 ---
 
-#### 🚀 Recommended Next Action Steps:
+#### 🚀 Recommended Actionable Next Steps:
 {steps_formatted}
 """
-        new_state = {
-            "stage": "stage_completed",
-            "last_recommendation": primary_career["id"],
-            "profile_answers": [full_student_text]
-        }
-        
-        options = [
-            f"Explore #{top_recs[1]['rank']} ({top_recs[1]['career']['title'].split('/')[0].strip()})",
-            f"Explore #{top_recs[2]['rank']} ({top_recs[2]['career']['title'].split('/')[0].strip()})",
-            "Start Fresh Consultation",
-            "What skills do I need?"
-        ]
-        return reply, new_state, options
+        return reply
 
-    # Backward-compatible aliases for app.py
-    @classmethod
-    def get_welcome_response(cls):
-        text, state, opts = cls.get_initial_greeting()
-        return text, opts
-
+    # Backward-compatible method
     @classmethod
     def process_message(cls, user_message: str, current_state: dict):
         return cls.process_chat_message(user_message, current_state)
 
 
-# For backward compatibility if imported elsewhere
 CareerRuleEngine = ConversationalCareerBot
 CAREER_KNOWLEDGE_BASE = {c["id"]: c for c in CAREERS_DATA}

@@ -3,133 +3,309 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debris Careers — Rule-Based Consultant</title>
+  <title>Debris Careers — AI & NLP Career Consultant</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <!-- Ambient Calming Constellation Background -->
+  <!-- Ambient Calming Constellation Background Canvas -->
   <canvas id="ambientCanvas"></canvas>
 
-  <div class="app-container">
-    <!-- Left Frosted Glass Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand-badge-container">
-          <img src="{{ url_for('static', filename='images/debris_logo.jpg') }}" alt="Debris Logo" class="sidebar-logo">
-          <h1 class="brand-name">Debris Careers</h1>
-        </div>
-        <p class="brand-desc">AI & NLP Career Consultant</p>
+  <!-- Left Slide-Out Consultation History Drawer -->
+  <div class="history-drawer-overlay" id="historyOverlay"></div>
+  <aside class="history-drawer" id="historyDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-icon">🕒</span>
+        <h3>Consultation History</h3>
+      </div>
+      <button type="button" class="btn-close-drawer" id="btnCloseDrawer" title="Close Drawer">✕</button>
+    </div>
 
-        <a href="{{ url_for('new_conversation') }}" class="new-chat-btn">
-          <span>+</span> New Consultation
+    <div class="drawer-actions">
+      {% if conversations %}
+      <form method="POST" action="{{ url_for('clear_all_chats') }}" onsubmit="return confirm('Clear your entire consultation history?');" style="margin: 0; width: 100%;">
+        <button type="submit" class="btn-clear-history">🗑️ Clear All History</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="drawer-list-wrap">
+      <ul class="drawer-conv-list">
+        {% if conversations %}
+          {% for conv in conversations %}
+            <li class="drawer-item-wrap {% if conv.id == active_conv_id %}active{% endif %}">
+              <a href="{{ url_for('chat_view', conv_id=conv.id) }}" class="drawer-conv-link" title="{{ conv.title }}">
+                <span class="conv-dot"></span>
+                <span class="conv-title-text">{{ conv.title }}</span>
+              </a>
+              <form method="POST" action="{{ url_for('delete_chat', conv_id=conv.id) }}" class="delete-chat-form" onsubmit="return confirm('Delete this consultation?');">
+                <button type="submit" class="btn-delete-conv" title="Delete conversation">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </form>
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="drawer-empty-state">No previous consultations recorded yet.</li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="drawer-footer">
+      <div class="drawer-user-info">
+        <span class="user-avatar-badge">{{ user_email[0].upper() if user_email else 'U' }}</span>
+        <div class="user-text-wrap">
+          <span class="user-role-lbl">Signed In</span>
+          <span class="user-email-lbl" title="{{ user_email }}">{{ user_email }}</span>
+        </div>
+      </div>
+      <a href="{{ url_for('auth_logout') }}" class="drawer-logout-btn">Sign Out &rarr;</a>
+    </div>
+  </aside>
+
+  <!-- Modern App Viewport Layout -->
+  <div class="app-viewport">
+    
+    <!-- Left Vertical Dock (Icon Bar matching reference image) -->
+    <nav class="side-dock">
+      <div class="dock-top">
+        <a href="{{ url_for('new_conversation') }}" class="dock-btn dock-btn-primary" title="New Consultation">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </a>
+
+        <button type="button" class="dock-btn" id="btnDockSearch" title="Focus Prompt Input">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+
+        <button type="button" class="dock-btn" id="btnDockExplore" title="Explore Streams">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+        </button>
+
+        <button type="button" class="dock-btn" id="btnDockCategories" title="Quick Fields">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+        </button>
+
+        <button type="button" class="dock-btn" id="btnDockHistory" title="Consultation History">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="dock-bottom">
+        <a href="{{ url_for('new_conversation') }}" class="dock-brand-avatar" title="Debris Careers">
+          <img src="{{ url_for('static', filename='images/debris_logo.jpg') }}" alt="Debris" class="dock-logo-img">
         </a>
       </div>
+    </nav>
 
-      <div class="history-section">
-        <div class="clear-history-bar">
-          <span class="section-label">Consultation History</span>
-          {% if conversations %}
-          <form method="POST" action="{{ url_for('clear_all_chats') }}" onsubmit="return confirm('Clear entire consultation history?');" style="margin: 0;">
-            <button type="submit" class="btn-clear-all" title="Clear all history">Clear All</button>
-          </form>
-          {% endif %}
-        </div>
-        <ul class="history-list">
-          {% if conversations %}
-            {% for conv in conversations %}
-              <li>
-                <div class="history-item-wrapper {% if conv.id == active_conv_id %}active{% endif %}">
-                  <a href="{{ url_for('chat_view', conv_id=conv.id) }}" class="history-item" title="{{ conv.title }}">
-                    {{ conv.title }}
-                  </a>
-                  <form method="POST" action="{{ url_for('delete_chat', conv_id=conv.id) }}" class="delete-chat-form" onsubmit="return confirm('Delete this consultation?');">
-                    <button type="submit" class="btn-delete-conv" title="Delete session">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                    </button>
-                  </form>
-                </div>
-              </li>
-            {% endfor %}
-          {% else %}
-            <li style="font-size: 12px; color: var(--text-muted); padding: 12px 10px;">No previous sessions yet.</li>
-          {% endif %}
-        </ul>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="user-badge" title="{{ user_email }}">
-          Account: <strong>{{ user_email }}</strong>
-        </div>
-        <div class="sidebar-footer-actions">
-          <button type="button" class="theme-toggle-btn" title="Switch Theme">
-            <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
-          </button>
-          <a href="{{ url_for('auth_logout') }}" class="logout-link">
-            Sign Out &rarr;
-          </a>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Frosted Glass Workspace -->
-    <main class="chat-main">
-      <header class="chat-header">
-        <div class="chat-title-group">
-          <h2>{{ current_conversation.title if current_conversation else "Career Consultation" }}</h2>
-        </div>
-        <div class="header-controls">
-          <div class="status-indicator">
-            <span class="status-dot"></span>
-            <span>Rule-Based Active</span>
+    <!-- Main Floating Rounded Workspace Card (Exact match to reference image) -->
+    <main class="main-card-workspace">
+      
+      <!-- Top Card Header -->
+      <header class="card-navbar">
+        <div class="nav-left">
+          <div class="assistant-badge">
+            <span class="badge-icon">❄️</span>
+            <span class="badge-text">Debris Careers v2.6</span>
+            <span class="badge-caret">▾</span>
           </div>
-          <button type="button" class="theme-toggle-btn" title="Switch Light/Dark Mode">
+        </div>
+
+        <div class="nav-center">
+          <span class="nav-center-title">Daily Debris Consultant</span>
+        </div>
+
+        <div class="nav-right">
+          <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
             <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
           </button>
+          <a href="{{ url_for('new_conversation') }}" class="btn-top-action">
+            <span>✨</span> New Session
+          </a>
         </div>
       </header>
 
-      <!-- Message History Container -->
-      <section class="messages-container" id="messagesContainer">
-        {% for msg in messages %}
-          {% if msg.sender == 'user' %}
-            <div class="message-row user-row">
-              <div class="sender-tag">You</div>
-              <div class="bubble">{{ msg.content }}</div>
+      <!-- Center Scrollable Workspace Body -->
+      <div class="card-scroll-body" id="cardScrollBody">
+        
+        <!-- Case 1: HERO VIEW (Visible when session is fresh / no messages yet) -->
+        <section class="hero-welcome-section {% if messages and messages|length > 0 %}hidden{% endif %}" id="heroWelcomeSection">
+          <div class="hero-header-row">
+            <div class="hero-text-block">
+              <h2 class="hero-greeting">Hi <span class="user-name-highlight">{{ user_email.split('@')[0].capitalize() if user_email else 'Student' }}</span>, Ready to</h2>
+              <h1 class="hero-headline">Achieve Great Things?</h1>
             </div>
-          {% else %}
-            <div class="message-row bot-row">
-              <div class="sender-tag">Debris Careers Consultant</div>
-              <div class="bubble" data-raw="{{ msg.content }}"></div>
-              
-              {% if loop.last and msg.options %}
-                <div class="quick-options">
-                  {% for opt in msg.options %}
-                    <button type="button" class="option-btn" data-val="{{ opt }}">{{ opt }}</button>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            </div>
-          {% endif %}
-        {% endfor %}
-      </section>
 
-      <!-- Bottom Chat Form -->
-      <footer class="chat-footer">
-        <form id="chatForm">
-          <div class="input-container">
-            <input type="text" id="userInput" class="chat-input" placeholder="Type your interest (e.g. 'I am interested in accounts') or select an option above..." autocomplete="off" autofocus required>
-            <button type="submit" class="chat-submit-btn">Send Query</button>
+            <!-- 3D Mascot Robot Matching Reference Image -->
+            <div class="hero-mascot-wrap">
+              <img src="{{ url_for('static', filename='images/assistant_robot.svg') }}" alt="AI Assistant Mascot" class="mascot-img">
+            </div>
           </div>
-          <div class="input-hint">
-            <span>Explore Medical, Non-Medical, Commerce, Humanities</span>
-            <span>Deterministic Expert System • Soothing Mind Mode</span>
+
+          <!-- 3 Feature Prompt Cards (Exact match to reference image) -->
+          <div class="feature-cards-grid">
+            
+            <!-- Card 1: Tech & Engineering -->
+            <div class="feature-card" data-prompt="I like coding, mathematics, and building software. Recommend the best engineering degrees, premier colleges, and top tech recruiters for me.">
+              <div class="card-icon-wrap icon-amber">
+                <!-- Stacked Layers Icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+              <h4 class="card-title">Explore Tech, AI & Systems</h4>
+              <p class="card-desc">Contribute code, architect scalable systems, explore AI/ML, and secure roles at top global tech firms.</p>
+              <span class="card-tag">Engineering & STEM</span>
+            </div>
+
+            <!-- Card 2: Commerce, CA & Finance -->
+            <div class="feature-card" data-prompt="I am interested in accounts, auditing, finance, and stock markets. What are the best career paths, top colleges, and Big 4 recruiters?">
+              <div class="card-icon-wrap icon-multi">
+                <!-- 4-Quadrant Geometric Slack-style Icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="8" height="8" rx="2" fill="#10B981"/>
+                  <rect x="13" y="3" width="8" height="8" rx="2" fill="#3B82F6"/>
+                  <rect x="3" y="13" width="8" height="8" rx="2" fill="#F59E0B"/>
+                  <rect x="13" y="13" width="8" height="8" rx="2" fill="#EF4444"/>
+                </svg>
+              </div>
+              <h4 class="card-title">Commerce, CA & Finance</h4>
+              <p class="card-desc">Stay connected with financial markets, master auditing, taxation, investment banking, and corporate advisory.</p>
+              <span class="card-tag">Finance & Corporate</span>
+            </div>
+
+            <!-- Card 3: Medicine, Law & Arts -->
+            <div class="feature-card" data-prompt="I am interested in medicine, healthcare, law, and creative design. What are the top degree programmes, colleges, and career roadmaps?">
+              <div class="card-icon-wrap icon-blue">
+                <!-- Blue Calendar / Shield Icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <path d="M12 14v4M10 16h4"></path>
+                </svg>
+              </div>
+              <h4 class="card-title">Medicine, Law & Humanities</h4>
+              <p class="card-desc">Organize your goals efficiently: explore clinical MBBS surgery, premier law NLUs, UI/UX studios, and civil services.</p>
+              <span class="card-tag">Healthcare & Arts</span>
+            </div>
+
           </div>
+        </section>
+
+        <!-- Case 2: CHAT CONVERSATION STREAM (Visible when messages exist) -->
+        <section class="messages-container" id="messagesContainer">
+          {% for msg in messages %}
+            {% if msg.sender == 'user' %}
+              <div class="message-row user-row">
+                <div class="sender-tag">You</div>
+                <div class="bubble user-bubble">{{ msg.content }}</div>
+              </div>
+            {% else %}
+              <div class="message-row bot-row">
+                <div class="sender-tag">Debris Careers AI Consultant</div>
+                <div class="bubble bot-bubble" data-raw="{{ msg.content }}"></div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </section>
+
+      </div>
+
+      <!-- Bottom Floating Search & Prompt Area (Exact match to reference image) -->
+      <footer class="floating-input-zone">
+        
+        <!-- Sub-header bar on top of the capsule -->
+        <div class="input-top-bar">
+          <div class="badge-sub-left">
+            <span class="sub-icon">✨</span>
+            <span class="sub-text">Tell me your interests, skills, or dream career</span>
+          </div>
+          <div class="badge-sub-right">
+            <span class="sub-icon">❄️</span>
+            <span class="sub-text">Powered by Debris NLP v2.6</span>
+          </div>
+        </div>
+
+        <!-- Capsule Input Bar -->
+        <form id="chatForm" class="search-capsule-form">
+          <button type="button" class="btn-input-plus" id="btnPlusAction" title="Explore Options">+</button>
+          
+          <input 
+            type="text" 
+            id="userInput" 
+            class="capsule-input" 
+            placeholder='Example : "I like mathematics, computers, and want a high-paying job"' 
+            autocomplete="off" 
+            autofocus 
+            required
+          >
+
+          <button type="button" class="btn-input-mic" id="btnMicAction" title="Voice Input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+
+          <button type="submit" class="btn-input-send" title="Send Query">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
         </form>
+
+        <!-- Quick Inspiration Action Chips (Matching pills under input in image) -->
+        <div class="quick-chips-row">
+          <button type="button" class="action-chip" data-query="I like coding, computers, and software engineering. What are the best degrees, top colleges, and companies?">
+            <span class="chip-icon">💡</span> Software & AI
+          </button>
+          <button type="button" class="action-chip" data-query="I am interested in accounts, chartered accountancy, and finance. What are the career options and Big 4 firms?">
+            <span class="chip-icon">📊</span> Accounts & CA
+          </button>
+          <button type="button" class="action-chip" data-query="I want to become a doctor or medical specialist. What is the path for MBBS, top hospitals, and NEET?">
+            <span class="chip-icon">🩺</span> Medicine & Bio
+          </button>
+          <button type="button" class="action-chip" data-query="I am interested in law, debate, and corporate advocacy. Which NLUs and tier-1 law firms are best?">
+            <span class="chip-icon">⚖️</span> Corporate Law
+          </button>
+          <button type="button" class="action-chip" data-query="I love art, sketching, digital interfaces, and psychology. What is the scope of UI/UX design and NID?">
+            <span class="chip-icon">🎨</span> UI/UX Design
+          </button>
+          <button type="button" class="action-chip" data-query="How do I prepare for UPSC Civil Services to become an IAS or IPS officer?">
+            <span class="chip-icon">🏛️</span> Civil Services
+          </button>
+        </div>
+
       </footer>
+
     </main>
+
   </div>
 
   <script>

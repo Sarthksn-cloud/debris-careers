@@ -33,11 +33,8 @@ def index():
     # Retrieve user's conversations
     convs = db.get_user_conversations(user["id"])
     if not convs:
-        # Create initial conversation
+        # Create initial conversation (clean start, wait for user input)
         conv_id = db.create_conversation(user["id"], "New Consultation")
-        # Add welcome bot message
-        welcome_text, options = CareerRuleEngine.get_welcome_response()
-        db.save_message(conv_id, "bot", welcome_text, options)
         return redirect(url_for("chat_view", conv_id=conv_id))
     
     # Redirect to most recently updated conversation
@@ -69,14 +66,12 @@ def chat_view(conv_id):
 
 @app.route("/chat/new")
 def new_conversation():
-    """Create a new consultation session and seed initial prompt."""
+    """Create a new consultation session waiting for user input."""
     user = get_current_user()
     if not user:
         return redirect(url_for("auth_view"))
 
     conv_id = db.create_conversation(user["id"], "New Consultation")
-    welcome_text, options = CareerRuleEngine.get_welcome_response()
-    db.save_message(conv_id, "bot", welcome_text, options)
     return redirect(url_for("chat_view", conv_id=conv_id))
 
 @app.route("/chat/delete/<conv_id>", methods=["POST"])
