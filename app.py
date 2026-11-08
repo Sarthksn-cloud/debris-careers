@@ -191,10 +191,27 @@ def auth_logout():
     session.clear()
     return redirect(url_for("auth_view"))
 
+def find_available_port(default_port=5005):
+    """Find a guaranteed free port starting from default_port, avoiding macOS system conflicts."""
+    import socket
+    for p in range(default_port, default_port + 30):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            # If connect_ex != 0, port is not currently bound
+            if s.connect_ex(('127.0.0.1', p)) != 0:
+                return p
+    return default_port
+
 if __name__ == "__main__":
-    print("=" * 60)
-    print("🏛️ Debris Careers — Expert Rule-Based Consultant Web Server")
-    print("Minimalist Black & White UI | Deterministic Expert System")
-    print("Running at: http://127.0.0.1:5001")
-    print("=" * 60)
-    app.run(host="127.0.0.1", port=5001, debug=True)
+    import sys
+    # Allow overriding port via command line argument: python3 app.py 8080
+    if len(sys.argv) > 1 and sys.argv[1].isdigit():
+        target_port = int(sys.argv[1])
+    else:
+        target_port = find_available_port(default_port=5005)
+
+    print("=" * 65)
+    print("🏛️  DEBRIS CAREERS — AI & NLP CAREER CONSULTANT")
+    print(f"🚀  Web server running live at:")
+    print(f"👉  http://127.0.0.1:{target_port}")
+    print("=" * 65)
+    app.run(host="127.0.0.1", port=target_port, debug=False)
