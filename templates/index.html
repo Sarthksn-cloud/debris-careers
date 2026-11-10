@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,301 +7,316 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <!-- Ambient Calming Constellation Background Canvas -->
-  <canvas id="ambientCanvas"></canvas>
-
-  <!-- Left Slide-Out Consultation History Drawer -->
-  <div class="history-drawer-overlay" id="historyOverlay"></div>
-  <aside class="history-drawer" id="historyDrawer">
-    <div class="drawer-header">
-      <div class="drawer-title-group">
-        <span class="drawer-icon">🕒</span>
-        <h3>Consultation History</h3>
-      </div>
-      <button type="button" class="btn-close-drawer" id="btnCloseDrawer" title="Close Drawer">✕</button>
-    </div>
-
-    <div class="drawer-actions">
-      {% if conversations %}
-      <form method="POST" action="{{ url_for('clear_all_chats') }}" onsubmit="return confirm('Clear your entire consultation history?');" style="margin: 0; width: 100%;">
-        <button type="submit" class="btn-clear-history">🗑️ Clear All History</button>
-      </form>
-      {% endif %}
-    </div>
-
-    <div class="drawer-list-wrap">
-      <ul class="drawer-conv-list">
-        {% if conversations %}
-          {% for conv in conversations %}
-            <li class="drawer-item-wrap {% if conv.id == active_conv_id %}active{% endif %}">
-              <a href="{{ url_for('chat_view', conv_id=conv.id) }}" class="drawer-conv-link" title="{{ conv.title }}">
-                <span class="conv-dot"></span>
-                <span class="conv-title-text">{{ conv.title }}</span>
-              </a>
-              <form method="POST" action="{{ url_for('delete_chat', conv_id=conv.id) }}" class="delete-chat-form" onsubmit="return confirm('Delete this consultation?');">
-                <button type="submit" class="btn-delete-conv" title="Delete conversation">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </form>
-            </li>
-          {% endfor %}
-        {% else %}
-          <li class="drawer-empty-state">No previous consultations recorded yet.</li>
-        {% endif %}
-      </ul>
-    </div>
-
-    <div class="drawer-footer">
-      <div class="drawer-user-info">
-        <span class="user-avatar-badge">{{ user_email[0].upper() if user_email else 'U' }}</span>
-        <div class="user-text-wrap">
-          <span class="user-role-lbl">Signed In</span>
-          <span class="user-email-lbl" title="{{ user_email }}">{{ user_email }}</span>
-        </div>
-      </div>
-      <a href="{{ url_for('auth_logout') }}" class="drawer-logout-btn">Sign Out &rarr;</a>
-    </div>
-  </aside>
-
-  <!-- Modern App Viewport Layout -->
-  <div class="app-viewport">
+  
+  <div class="chatgpt-layout" id="appLayout">
     
-    <!-- Left Vertical Dock (Icon Bar matching reference image) -->
-    <nav class="side-dock">
-      <div class="dock-top">
-        <a href="{{ url_for('new_conversation') }}" class="dock-btn dock-btn-primary" title="New Consultation">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ====================================================================
+         1. LEFT SIDEBAR (Iconic ChatGPT Collapsible Navigation)
+         ==================================================================== -->
+    <aside class="chatgpt-sidebar" id="sidebar">
+      
+      <!-- Sidebar Top Bar: Toggle Collapse & New Chat -->
+      <div class="sidebar-topbar">
+        <button type="button" class="sidebar-icon-btn" id="btnCloseSidebar" title="Close sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+
+        <a href="{{ url_for('new_conversation') }}" class="sidebar-icon-btn" title="New chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Quick Action: New Chat Full Button -->
+      <div class="sidebar-new-chat-wrap">
+        <a href="{{ url_for('new_conversation') }}" class="btn-sidebar-new-chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-        </a>
-
-        <button type="button" class="dock-btn" id="btnDockSearch" title="Focus Prompt Input">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </button>
-
-        <button type="button" class="dock-btn" id="btnDockExplore" title="Explore Streams">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-          </svg>
-        </button>
-
-        <button type="button" class="dock-btn" id="btnDockCategories" title="Quick Fields">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-          </svg>
-        </button>
-
-        <button type="button" class="dock-btn" id="btnDockHistory" title="Consultation History">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-        </button>
-      </div>
-
-      <div class="dock-bottom">
-        <a href="{{ url_for('new_conversation') }}" class="dock-brand-avatar" title="Debris Careers">
-          <img src="{{ url_for('static', filename='images/debris_logo.jpg') }}" alt="Debris" class="dock-logo-img">
+          <span>New chat</span>
         </a>
       </div>
-    </nav>
 
-    <!-- Main Floating Rounded Workspace Card (Exact match to reference image) -->
-    <main class="main-card-workspace">
+      <!-- Chat History Timeline (Grouped like ChatGPT) -->
+      <div class="sidebar-history-container" id="sidebarHistory">
+        <div class="history-timeline-section">
+          <div class="history-group-header">Recent Consultations</div>
+          <div class="history-list">
+            {% if conversations %}
+              {% for conv in conversations %}
+                <div class="history-chat-item {% if conv.id == active_conv_id %}active{% endif %}" data-title="{{ conv.title|lower }}">
+                  <a href="{{ url_for('chat_view', conv_id=conv.id) }}" class="history-chat-link" title="{{ conv.title }}">
+                    <span class="chat-title-text">{{ conv.title }}</span>
+                  </a>
+                  <form method="POST" action="{{ url_for('delete_chat', conv_id=conv.id) }}" class="delete-chat-form" onsubmit="return confirm('Delete this chat?');">
+                    <button type="submit" class="btn-chat-delete" title="Delete conversation">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="history-empty">No previous consultations.</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar User Profile & Settings at Bottom -->
+      <div class="sidebar-user-footer">
+        <div class="user-profile-button" id="btnUserMenuToggle">
+          <div class="user-avatar-badge">
+            {{ user_email[0].upper() if user_email else 'U' }}
+          </div>
+          <div class="user-name-text">
+            {{ user_email.split('@')[0].capitalize() if user_email else 'Student' }}
+          </div>
+          <svg class="user-caret-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+
+        <!-- ChatGPT-style User Popup Menu -->
+        <div class="user-popup-menu" id="userPopupMenu">
+          <div class="popup-menu-header">
+            <span class="popup-user-email">{{ user_email }}</span>
+          </div>
+          <button type="button" class="popup-menu-item" id="btnThemeToggle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <span id="themeToggleText">Switch to Light Mode</span>
+          </button>
+          <a href="https://github.com/Sarthksn-cloud/debris-careers/raw/main/Debris_Careers_Comprehensive_Viva_Report.pdf" target="_blank" class="popup-menu-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>Download Viva PDF</span>
+          </a>
+          {% if conversations %}
+          <form method="POST" action="{{ url_for('clear_all_chats') }}" onsubmit="return confirm('Clear all consultation history?');" style="margin: 0;">
+            <button type="submit" class="popup-menu-item text-danger">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear all chats</span>
+            </button>
+          </form>
+          {% endif %}
+          <div class="popup-divider"></div>
+          <a href="{{ url_for('auth_logout') }}" class="popup-menu-item text-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Log out</span>
+          </a>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ====================================================================
+         2. MAIN CHAT AREA (Iconic ChatGPT Viewport & Centered Reading Area)
+         ==================================================================== -->
+    <main class="chatgpt-main">
       
-      <!-- Top Card Header -->
-      <header class="card-navbar">
-        <div class="nav-left">
-          <div class="assistant-badge">
-            <span class="badge-icon">❄️</span>
-            <span class="badge-text">Debris Careers v2.6</span>
-            <span class="badge-caret">▾</span>
+      <!-- Top Navbar: Sidebar Toggle, Model Dropdown & Actions -->
+      <header class="chat-topbar">
+        <div class="topbar-left">
+          <button type="button" class="topbar-icon-btn" id="btnOpenSidebar" title="Open sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+          </button>
+
+          <!-- ChatGPT-style Model Pill Selector -->
+          <div class="model-select-wrapper">
+            <button type="button" class="btn-model-pill" id="btnModelDropdown">
+              <span class="model-name-label" id="currentModelLabel">Debris Careers 4o</span>
+              <svg class="model-caret-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="model-dropdown-menu" id="modelDropdownMenu">
+              <div class="model-dropdown-item active" data-model="Debris Careers 4o">
+                <div class="model-item-top">
+                  <strong>Debris Careers 4o</strong>
+                  <span class="model-badge">Default</span>
+                </div>
+                <p class="model-item-desc">High-speed NLP matching & comprehensive career recommendation</p>
+              </div>
+              <div class="model-dropdown-item" data-model="Debris Reasoning v2.6">
+                <div class="model-item-top">
+                  <strong>Debris Reasoning v2.6</strong>
+                </div>
+                <p class="model-item-desc">Deterministic rule engine & academic pathway analysis</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="nav-center">
-          <span class="nav-center-title">Daily Debris Consultant</span>
-        </div>
-
-        <div class="nav-right">
-          <button type="button" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
-            <span class="theme-icon">🌙</span> <span class="theme-label">Dark Mode</span>
-          </button>
-          <a href="{{ url_for('new_conversation') }}" class="btn-top-action">
-            <span>✨</span> New Session
+        <div class="topbar-right">
+          <a href="https://github.com/Sarthksn-cloud/debris-careers/raw/main/Debris_Careers_Comprehensive_Viva_Report.pdf" target="_blank" class="btn-topbar-action" title="Download Master Viva Defense Report">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>Viva Report</span>
+          </a>
+          <a href="{{ url_for('new_conversation') }}" class="btn-topbar-icon" title="New chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
           </a>
         </div>
       </header>
 
-      <!-- Center Scrollable Workspace Body -->
-      <div class="card-scroll-body" id="cardScrollBody">
+      <!-- Scrollable Message Body -->
+      <div class="chat-scroll-container" id="chatScrollContainer">
         
-        <!-- Case 1: HERO VIEW (Visible when session is fresh / no messages yet) -->
-        <section class="hero-welcome-section {% if messages and messages|length > 0 %}hidden{% endif %}" id="heroWelcomeSection">
-          <div class="hero-header-row">
-            <div class="hero-text-block">
-              <h2 class="hero-greeting">Hi <span class="user-name-highlight">{{ user_email.split('@')[0].capitalize() if user_email else 'Student' }}</span>, Ready to</h2>
-              <h1 class="hero-headline">Achieve Great Things?</h1>
-            </div>
+        <!-- Case 1: HERO VIEW (ChatGPT Home View: What can I help with?) -->
+        <div class="chatgpt-hero-view {% if messages and messages|length > 0 %}hidden{% endif %}" id="heroView">
+          <h1 class="chatgpt-hero-title">What can I help with?</h1>
 
-            <!-- 3D Mascot Robot Matching Reference Image -->
-            <div class="hero-mascot-wrap">
-              <img src="{{ url_for('static', filename='images/assistant_robot.svg') }}" alt="AI Assistant Mascot" class="mascot-img">
-            </div>
-          </div>
-
-          <!-- 3 Feature Prompt Cards (Exact match to reference image) -->
-          <div class="feature-cards-grid">
+          <!-- 4 Iconic Prompt Suggestion Cards (2x2 Grid) -->
+          <div class="prompt-cards-grid">
             
-            <!-- Card 1: Tech & Engineering -->
-            <div class="feature-card" data-prompt="I like coding, mathematics, and building software. Recommend the best engineering degrees, premier colleges, and top tech recruiters for me.">
-              <div class="card-icon-wrap icon-amber">
-                <!-- Stacked Layers Icon -->
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                  <polyline points="2 17 12 22 22 17"></polyline>
-                  <polyline points="2 12 12 17 22 12"></polyline>
-                </svg>
+            <div class="prompt-card" data-prompt="I like coding, mathematics, and computers. Recommend the best engineering degrees, premier colleges, and top tech recruiters.">
+              <div class="prompt-card-icon">💻</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Software & AI Engineering</div>
+                <div class="prompt-card-desc">B.Tech degrees, top IIT/NIT colleges, and high-package tech recruiters</div>
               </div>
-              <h4 class="card-title">Explore Tech, AI & Systems</h4>
-              <p class="card-desc">Contribute code, architect scalable systems, explore AI/ML, and secure roles at top global tech firms.</p>
-              <span class="card-tag">Engineering & STEM</span>
             </div>
 
-            <!-- Card 2: Commerce, CA & Finance -->
-            <div class="feature-card" data-prompt="I am interested in accounts, auditing, finance, and stock markets. What are the best career paths, top colleges, and Big 4 recruiters?">
-              <div class="card-icon-wrap icon-multi">
-                <!-- 4-Quadrant Geometric Slack-style Icon -->
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="3" width="8" height="8" rx="2" fill="#10B981"/>
-                  <rect x="13" y="3" width="8" height="8" rx="2" fill="#3B82F6"/>
-                  <rect x="3" y="13" width="8" height="8" rx="2" fill="#F59E0B"/>
-                  <rect x="13" y="13" width="8" height="8" rx="2" fill="#EF4444"/>
-                </svg>
+            <div class="prompt-card" data-prompt="I am interested in accounts, auditing, finance, and stock markets. What are the best career paths, top colleges, and Big 4 recruiters?">
+              <div class="prompt-card-icon">📊</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Commerce, CA & Finance</div>
+                <div class="prompt-card-desc">Chartered Accountancy, investment banking, Big 4 firms, and SRCC</div>
               </div>
-              <h4 class="card-title">Commerce, CA & Finance</h4>
-              <p class="card-desc">Stay connected with financial markets, master auditing, taxation, investment banking, and corporate advisory.</p>
-              <span class="card-tag">Finance & Corporate</span>
             </div>
 
-            <!-- Card 3: Medicine, Law & Arts -->
-            <div class="feature-card" data-prompt="I am interested in medicine, healthcare, law, and creative design. What are the top degree programmes, colleges, and career roadmaps?">
-              <div class="card-icon-wrap icon-blue">
-                <!-- Blue Calendar / Shield Icon -->
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                  <path d="M12 14v4M10 16h4"></path>
-                </svg>
+            <div class="prompt-card" data-prompt="I want to become a doctor or medical specialist. What is the preparation strategy for NEET, MBBS degrees, and clinical specializations?">
+              <div class="prompt-card-icon">🩺</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Medical & Healthcare</div>
+                <div class="prompt-card-desc">NEET preparation, AIIMS MBBS degrees, surgery branches, and residency</div>
               </div>
-              <h4 class="card-title">Medicine, Law & Humanities</h4>
-              <p class="card-desc">Organize your goals efficiently: explore clinical MBBS surgery, premier law NLUs, UI/UX studios, and civil services.</p>
-              <span class="card-tag">Healthcare & Arts</span>
+            </div>
+
+            <div class="prompt-card" data-prompt="I am interested in corporate law, debate, and civil services. Which premier NLUs, tier-1 law firms, and UPSC strategies are best?">
+              <div class="prompt-card-icon">⚖️</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Corporate Law & Civil Services</div>
+                <div class="prompt-card-desc">Top NLUs, corporate law firms, and UPSC IAS/IPS exam strategy</div>
+              </div>
             </div>
 
           </div>
-        </section>
+        </div>
 
-        <!-- Case 2: CHAT CONVERSATION STREAM (Visible when messages exist) -->
-        <section class="messages-container" id="messagesContainer">
+        <!-- Case 2: CONVERSATION STREAM (ChatGPT Iconic Bubble & Bot Layout) -->
+        <div class="conversation-stream" id="conversationStream">
           {% for msg in messages %}
             {% if msg.sender == 'user' %}
               <div class="message-row user-row">
-                <div class="sender-tag">You</div>
-                <div class="bubble user-bubble">{{ msg.content }}</div>
+                <div class="user-bubble">{{ msg.content }}</div>
               </div>
             {% else %}
               <div class="message-row bot-row">
-                <div class="sender-tag">Debris Careers AI Consultant</div>
-                <div class="bubble bot-bubble" data-raw="{{ msg.content }}"></div>
+                <div class="bot-spark-avatar">
+                  <img src="{{ url_for('static', filename='images/chatgpt_spark.svg') }}" alt="Debris Spark" class="spark-svg">
+                </div>
+                <div class="bot-content-wrap">
+                  <div class="bot-bubble-markdown" data-raw="{{ msg.content }}"></div>
+                  <div class="bot-action-bar">
+                    <button type="button" class="btn-action-copy" title="Copy response">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="btn-action-thumb" title="Good response">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="btn-action-thumb" title="Bad response">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="btn-action-retry" title="Regenerate response">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             {% endif %}
           {% endfor %}
-        </section>
+        </div>
 
       </div>
 
-      <!-- Bottom Floating Search & Prompt Area (Exact match to reference image) -->
-      <footer class="floating-input-zone">
-        
-        <!-- Sub-header bar on top of the capsule -->
-        <div class="input-top-bar">
-          <div class="badge-sub-left">
-            <span class="sub-icon">✨</span>
-            <span class="sub-text">Tell me your interests, skills, or dream career</span>
-          </div>
-          <div class="badge-sub-right">
-            <span class="sub-icon">❄️</span>
-            <span class="sub-text">Powered by Debris NLP v2.6</span>
-          </div>
+      <!-- ChatGPT Floating Bottom Input Zone -->
+      <footer class="chat-input-zone">
+        <div class="input-container-card">
+          <form id="chatForm" class="chat-input-form">
+            <button type="button" class="btn-input-attach" id="btnAttach" title="Attach file or context">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+
+            <textarea 
+              id="userInput" 
+              class="chat-textarea" 
+              rows="1" 
+              placeholder="Message Debris Careers..." 
+              autocomplete="off" 
+              required
+            ></textarea>
+
+            <button type="submit" class="btn-chatgpt-send" id="btnSend" title="Send message" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </form>
         </div>
 
-        <!-- Capsule Input Bar -->
-        <form id="chatForm" class="search-capsule-form">
-          <button type="button" class="btn-input-plus" id="btnPlusAction" title="Explore Options">+</button>
-          
-          <input 
-            type="text" 
-            id="userInput" 
-            class="capsule-input" 
-            placeholder='Example : "I like mathematics, computers, and want a high-paying job"' 
-            autocomplete="off" 
-            autofocus 
-            required
-          >
-
-          <button type="button" class="btn-input-mic" id="btnMicAction" title="Voice Input">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="23"></line>
-              <line x1="8" y1="23" x2="16" y2="23"></line>
-            </svg>
-          </button>
-
-          <button type="submit" class="btn-input-send" title="Send Query">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </form>
-
-        <!-- Quick Inspiration Action Chips (Matching pills under input in image) -->
-        <div class="quick-chips-row">
-          <button type="button" class="action-chip" data-query="I like coding, computers, and software engineering. What are the best degrees, top colleges, and companies?">
-            <span class="chip-icon">💡</span> Software & AI
-          </button>
-          <button type="button" class="action-chip" data-query="I am interested in accounts, chartered accountancy, and finance. What are the career options and Big 4 firms?">
-            <span class="chip-icon">📊</span> Accounts & CA
-          </button>
-          <button type="button" class="action-chip" data-query="I want to become a doctor or medical specialist. What is the path for MBBS, top hospitals, and NEET?">
-            <span class="chip-icon">🩺</span> Medicine & Bio
-          </button>
-          <button type="button" class="action-chip" data-query="I am interested in law, debate, and corporate advocacy. Which NLUs and tier-1 law firms are best?">
-            <span class="chip-icon">⚖️</span> Corporate Law
-          </button>
-          <button type="button" class="action-chip" data-query="I love art, sketching, digital interfaces, and psychology. What is the scope of UI/UX design and NID?">
-            <span class="chip-icon">🎨</span> UI/UX Design
-          </button>
-          <button type="button" class="action-chip" data-query="How do I prepare for UPSC Civil Services to become an IAS or IPS officer?">
-            <span class="chip-icon">🏛️</span> Civil Services
-          </button>
+        <div class="chat-disclaimer">
+          Debris Careers can make mistakes. Check important career and college information.
         </div>
-
       </footer>
 
     </main>
@@ -311,7 +326,6 @@
   <script>
     window.ACTIVE_CONV_ID = "{{ active_conv_id }}";
   </script>
-  <script src="{{ url_for('static', filename='js/ambient.js') }}"></script>
   <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>
 </html>
