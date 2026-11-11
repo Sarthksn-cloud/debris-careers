@@ -22,7 +22,7 @@ def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # User table with email and password (enforcing max 8 chars at application layer)
+    # User table with email and salted password hash
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,17 +64,17 @@ def init_db():
 def register_user(email: str, password: str):
     """
     Register a user with an email and password.
-    Validation: Password must be maximum 8 characters.
+    Proper validation: valid email format and minimum 4 characters.
     """
     email = email.strip().lower()
-    if not email or "@" not in email:
+    if not email or "@" not in email or "." not in email:
         return False, "Please enter a valid email address."
     
-    if len(password) < 1:
-        return False, "Password cannot be empty."
+    if len(password) < 4:
+        return False, "Password must be at least 4 characters."
     
-    if len(password) > 8:
-        return False, "Security constraint: Password must be maximum 8 characters."
+    if len(password) > 64:
+        return False, "Password must not exceed 64 characters."
 
     pwd_hash = hash_password(password)
     conn = get_db_connection()
@@ -149,6 +149,15 @@ def get_conversation_messages(conv_id: str, user_id: int):
     messages = []
     for row in cursor.fetchall():
         msg = dict(row)
+        raw_ts = msg.get("timestamp")
+        friendly_time = ""
+        if raw_ts:
+            try:
+                dt = datetime.strptime(str(raw_ts)[:19], "%Y-%m-%d %H:%M:%S")
+                friendly_time = dt.strftime("%I:%M %p").lstrip("0")
+            except Exception:
+                friendly_time = str(raw_ts)[11:16]
+        msg["formatted_time"] = friendly_time
         if msg["options"]:
             try:
                 msg["options"] = json.loads(msg["options"])
@@ -176,12 +185,22 @@ def save_message(conv_id: str, sender: str, content: str, options: list = None):
     
     conn.commit()
     conn.close()
+    
+    # Return friendly timestamp for UI
+    try:
+        dt = datetime.utcnow()
+        return dt.strftime("%I:%M %p").lstrip("0")
+    except Exception:
+        return ""
 
 def update_conversation_title(conv_id: str, title: str):
     """Update title of a conversation based on the user's first query."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE conversations SET title = ? WHERE id = ?", (title[:30], conv_id))
+    clean_title = title.strip()
+    if len(clean_title) > 28:
+        clean_title = clean_title[:28] + "..."
+    cursor.execute("UPDATE conversations SET title = ? WHERE id = ?", (clean_title, conv_id))
     conn.commit()
     conn.close()
 
@@ -211,7 +230,6 @@ def delete_conversation(conv_id: str, user_id: int):
     """Delete a specific conversation and all its messages."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Ensure user owns this conversation
     cursor.execute("DELETE FROM messages WHERE conversation_id = ? AND conversation_id IN (SELECT id FROM conversations WHERE user_id = ?)", (conv_id, user_id))
     cursor.execute("DELETE FROM conversations WHERE id = ? AND user_id = ?", (conv_id, user_id))
     deleted = cursor.rowcount > 0

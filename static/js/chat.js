@@ -1,7 +1,6 @@
 /**
- * DEBRIS CAREERS — ChatGPT Interface Client Controller
- * Natural free-form career consultation, auto-resizing textarea,
- * dark/light theme switching, model selector, markdown formatting.
+ * DEBRIS CAREERS — AI Career Consultant Frontend Controller
+ * Minimalist, Reactive, Lavender Glassmorphism Client Experience.
  */
 
 // Markdown to HTML converter
@@ -90,97 +89,76 @@ function formatMarkdown(text) {
   return html;
 }
 
+// Format current time as '10:45 AM'
+function getNowTimeString() {
+  const now = new Date();
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).replace(/^0/, '');
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  const chatViewport = document.getElementById("chatViewport");
+  const emptyWelcomeState = document.getElementById("emptyWelcomeState");
   const conversationStream = document.getElementById("conversationStream");
-  const heroView = document.getElementById("heroView");
-  const chatScrollContainer = document.getElementById("chatScrollContainer");
+  const bottomInputBar = document.getElementById("bottomInputBar");
+  const thinkingIndicator = document.getElementById("thinkingIndicator");
+
+  const heroInputForm = document.getElementById("heroInputForm");
+  const heroInputText = document.getElementById("heroInputText");
   const chatForm = document.getElementById("chatForm");
   const userInput = document.getElementById("userInput");
-  const btnSend = document.getElementById("btnSend");
+
   const activeConvId = window.ACTIVE_CONV_ID;
 
-  // --- Theme Controller ---
-  const THEME_KEY = "chatgpt_theme";
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
-    const themeToggleText = document.getElementById("themeToggleText");
-    if (themeToggleText) {
-      themeToggleText.textContent = theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
-    }
-  }
-  const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
-  applyTheme(savedTheme);
-
-  const btnThemeToggle = document.getElementById("btnThemeToggle");
-  if (btnThemeToggle) {
-    btnThemeToggle.addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-theme") || "dark";
-      applyTheme(current === "dark" ? "light" : "dark");
-    });
-  }
-
-  // --- Format Existing Server-Rendered Bot Messages ---
-  document.querySelectorAll(".bot-bubble-markdown").forEach(el => {
+  // Format existing server-rendered bot messages on load
+  document.querySelectorAll(".msg-markdown-body").forEach(el => {
     const raw = el.getAttribute("data-raw");
     if (raw) {
       el.innerHTML = formatMarkdown(raw);
     }
   });
 
-  // --- Auto-Scroll to Bottom ---
+  // Auto-scroll to bottom
   function scrollToBottom() {
-    if (chatScrollContainer) {
-      chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
+    if (chatViewport) {
+      chatViewport.scrollTop = chatViewport.scrollHeight;
     }
   }
   scrollToBottom();
 
-  // --- Textarea Auto-Resize & Send Button Enable/Disable ---
-  if (userInput && btnSend) {
-    userInput.addEventListener("input", () => {
-      // Auto resize height
-      userInput.style.height = "auto";
-      userInput.style.height = Math.min(userInput.scrollHeight, 180) + "px";
-
-      // Enable/disable send button
-      const hasText = userInput.value.trim().length > 0;
-      btnSend.disabled = !hasText;
-      btnSend.classList.toggle("active", hasText);
-    });
-
-    // Handle Enter to send, Shift+Enter for newline
-    userInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        if (userInput.value.trim().length > 0) {
-          sendMessage(userInput.value);
-        }
-      }
-    });
-  }
-
-  // --- Send Message Function ---
+  // Send message function
   async function sendMessage(text) {
     const cleanText = text.trim();
     if (!cleanText) return;
 
-    // Hide hero view
-    if (heroView) heroView.classList.add("hidden");
+    // Transition from Empty Center Welcome to Active Stream
+    if (emptyWelcomeState) emptyWelcomeState.classList.add("hidden");
+    if (conversationStream) conversationStream.classList.remove("hidden");
+    if (bottomInputBar) bottomInputBar.classList.remove("hidden");
 
-    // Append user message immediately
-    appendUserMessage(cleanText);
+    // Append User Message to UI
+    const timeStr = getNowTimeString();
+    appendUserMessage(cleanText, timeStr);
 
-    // Reset textarea
+    // Reset inputs
+    if (heroInputText) {
+      heroInputText.value = "";
+      heroInputText.style.height = "auto";
+    }
     if (userInput) {
       userInput.value = "";
       userInput.style.height = "auto";
     }
-    if (btnSend) {
-      btnSend.disabled = true;
-      btnSend.classList.remove("active");
+
+    // Show Thinking Indicator
+    if (thinkingIndicator) {
+      thinkingIndicator.classList.remove("hidden");
+      conversationStream.appendChild(thinkingIndicator);
     }
     scrollToBottom();
+
+    // Disable send buttons while waiting
+    const sendBtns = document.querySelectorAll(".btn-send-purple");
+    sendBtns.forEach(b => { b.disabled = true; });
 
     try {
       const response = await fetch("/api/chat", {
@@ -196,184 +174,229 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
       if (data.status === "success") {
-        appendBotMessage(data.bot_message);
+        if (thinkingIndicator) thinkingIndicator.classList.add("hidden");
+        appendBotMessage(data.bot_message, data.bot_time || getNowTimeString());
       } else {
-        appendBotMessage("An error occurred while analyzing career pathways. Please try again.");
+        if (thinkingIndicator) thinkingIndicator.classList.add("hidden");
+        appendBotMessage("An error occurred while generating career guidance. Please try again.", getNowTimeString());
       }
     } catch (err) {
       console.error("Chat error:", err);
-      appendBotMessage("Communication error. Please ensure the local server is running.");
+      if (thinkingIndicator) thinkingIndicator.classList.add("hidden");
+      appendBotMessage("Connection error. Please verify the local server is running.", getNowTimeString());
     } finally {
+      sendBtns.forEach(b => { b.disabled = false; });
       scrollToBottom();
       if (userInput) userInput.focus();
     }
   }
 
-  function appendUserMessage(text) {
+  function appendUserMessage(text, timeStr) {
     const row = document.createElement("div");
-    row.className = "message-row user-row";
-    row.innerHTML = `<div class="user-bubble">${escapeHtml(text)}</div>`;
-    conversationStream.appendChild(row);
+    row.className = "chat-msg-row user-row";
+    row.innerHTML = `
+      <div class="msg-bubble user-bubble">
+        <div class="msg-content-text">${escapeHtml(text)}</div>
+        <span class="msg-timestamp">${escapeHtml(timeStr)}</span>
+      </div>
+    `;
+    if (thinkingIndicator && thinkingIndicator.parentNode === conversationStream) {
+      conversationStream.insertBefore(row, thinkingIndicator);
+    } else {
+      conversationStream.appendChild(row);
+    }
   }
 
-  function appendBotMessage(rawText) {
+  function appendBotMessage(rawText, timeStr) {
     const row = document.createElement("div");
-    row.className = "message-row bot-row";
+    row.className = "chat-msg-row ai-row";
     row.innerHTML = `
-      <div class="bot-spark-avatar">
-        <img src="/static/images/chatgpt_spark.svg" alt="Debris Spark" class="spark-svg">
+      <div class="ai-avatar-badge">
+        <img src="/static/images/debris_symbol.svg" alt="Debris AI" class="ai-badge-svg">
       </div>
-      <div class="bot-content-wrap">
-        <div class="bot-bubble-markdown">${formatMarkdown(rawText)}</div>
-        <div class="bot-action-bar">
-          <button type="button" class="btn-action-copy" title="Copy response">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-          </button>
-          <button type="button" class="btn-action-thumb" title="Good response">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-            </svg>
-          </button>
-          <button type="button" class="btn-action-thumb" title="Bad response">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
-            </svg>
-          </button>
-          <button type="button" class="btn-action-retry" title="Regenerate response">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-            </svg>
-          </button>
-        </div>
+      <div class="msg-bubble ai-bubble glass-panel">
+        <div class="msg-markdown-body">${formatMarkdown(rawText)}</div>
+        <span class="msg-timestamp">${escapeHtml(timeStr)}</span>
       </div>
     `;
     conversationStream.appendChild(row);
-    bindBotActionEvents(row);
   }
 
-  // --- Form Submit ---
-  if (chatForm) {
-    chatForm.addEventListener("submit", (e) => {
+  // --- Form & Textarea Event Listeners ---
+  function setupTextarea(textarea, form) {
+    if (!textarea || !form) return;
+
+    // Auto-expand textarea
+    textarea.addEventListener("input", () => {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 160) + "px";
+    });
+
+    // Enter to send, Shift+Enter for newline
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (textarea.value.trim().length > 0) {
+          sendMessage(textarea.value);
+        }
+      }
+    });
+
+    // Form submit
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (userInput && userInput.value.trim().length > 0) {
-        sendMessage(userInput.value);
+      if (textarea.value.trim().length > 0) {
+        sendMessage(textarea.value);
       }
     });
   }
 
-  // --- Prompt Suggestion Cards (Hero 2x2 Grid) ---
-  document.querySelectorAll(".prompt-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const prompt = card.getAttribute("data-prompt");
-      if (prompt) {
-        sendMessage(prompt);
-      }
+  setupTextarea(heroInputText, heroInputForm);
+  setupTextarea(userInput, chatForm);
+
+  // --- Sidebar Collapse & Mobile Drawer Controller ---
+  const chatSidebar = document.getElementById("chatSidebar");
+  const btnCollapseSidebar = document.getElementById("btnCollapseSidebar");
+  const btnToggleDrawer = document.getElementById("btnToggleDrawer");
+  const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+  function toggleSidebar() {
+    if (!chatSidebar) return;
+    const isMobile = window.innerWidth <= 860;
+    if (isMobile) {
+      const isOpen = chatSidebar.classList.contains("drawer-open");
+      chatSidebar.classList.toggle("drawer-open", !isOpen);
+      if (sidebarOverlay) sidebarOverlay.classList.toggle("hidden", isOpen);
+    } else {
+      chatSidebar.classList.toggle("collapsed");
+    }
+  }
+
+  function closeMobileDrawer() {
+    if (chatSidebar) chatSidebar.classList.remove("drawer-open");
+    if (sidebarOverlay) sidebarOverlay.classList.add("hidden");
+  }
+
+  if (btnCollapseSidebar) btnCollapseSidebar.addEventListener("click", toggleSidebar);
+  if (btnToggleDrawer) btnToggleDrawer.addEventListener("click", toggleSidebar);
+  if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeMobileDrawer);
+
+  // --- User Profile Dropdown Popover ---
+  const btnUserMenu = document.getElementById("btnUserMenu");
+  const userDropdown = document.getElementById("userDropdown");
+
+  if (btnUserMenu && userDropdown) {
+    btnUserMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+      userDropdown.classList.toggle("hidden");
+    });
+    document.addEventListener("click", () => {
+      userDropdown.classList.add("hidden");
+    });
+  }
+
+  // --- Delete Chat Confirmation Modal ---
+  const confirmDeleteModal = document.getElementById("confirmDeleteModal");
+  const modalDialogTitle = document.getElementById("modalDialogTitle");
+  const modalDialogText = document.getElementById("modalDialogText");
+  const btnCancelModal = document.getElementById("btnCancelModal");
+  const btnDismissDelete = document.getElementById("btnDismissDelete");
+  const btnConfirmDelete = document.getElementById("btnConfirmDelete");
+  const btnPromptClearAll = document.getElementById("btnPromptClearAll");
+
+  let pendingDeleteType = null; // 'single' or 'all'
+  let pendingDeleteId = null;
+
+  function openDeleteModal(title, text, type, id = null) {
+    if (!confirmDeleteModal) return;
+    modalDialogTitle.textContent = title;
+    modalDialogText.textContent = text;
+    pendingDeleteType = type;
+    pendingDeleteId = id;
+    confirmDeleteModal.classList.remove("hidden");
+  }
+
+  function closeModal() {
+    if (confirmDeleteModal) confirmDeleteModal.classList.add("hidden");
+    pendingDeleteType = null;
+    pendingDeleteId = null;
+  }
+
+  if (btnCancelModal) btnCancelModal.addEventListener("click", closeModal);
+  if (btnDismissDelete) btnDismissDelete.addEventListener("click", closeModal);
+  if (confirmDeleteModal) {
+    confirmDeleteModal.addEventListener("click", (e) => {
+      if (e.target === confirmDeleteModal) closeModal();
+    });
+  }
+
+  // Bind individual delete buttons in sidebar
+  document.querySelectorAll(".btn-delete-item").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.getAttribute("data-id");
+      const title = btn.getAttribute("data-title") || "this chat";
+      openDeleteModal(
+        "Delete Conversation",
+        `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+        "single",
+        id
+      );
     });
   });
 
-  // --- Sidebar Collapse & Open ---
-  const sidebar = document.getElementById("sidebar");
-  const btnCloseSidebar = document.getElementById("btnCloseSidebar");
-  const btnOpenSidebar = document.getElementById("btnOpenSidebar");
-
-  if (btnCloseSidebar && sidebar) {
-    btnCloseSidebar.addEventListener("click", () => {
-      sidebar.classList.add("collapsed");
-    });
-  }
-  if (btnOpenSidebar && sidebar) {
-    btnOpenSidebar.addEventListener("click", () => {
-      sidebar.classList.remove("collapsed");
+  // Bind clear all button
+  if (btnPromptClearAll) {
+    btnPromptClearAll.addEventListener("click", (e) => {
+      e.preventDefault();
+      openDeleteModal(
+        "Clear All Chat History",
+        "Are you sure you want to delete all past conversations? This action cannot be undone.",
+        "all"
+      );
     });
   }
 
-  // --- User Profile Popup Menu ---
-  const btnUserMenuToggle = document.getElementById("btnUserMenuToggle");
-  const userPopupMenu = document.getElementById("userPopupMenu");
-  if (btnUserMenuToggle && userPopupMenu) {
-    btnUserMenuToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      userPopupMenu.classList.toggle("show");
-    });
-    document.addEventListener("click", () => {
-      userPopupMenu.classList.remove("show");
-    });
-  }
+  // Confirm delete handler
+  if (btnConfirmDelete) {
+    btnConfirmDelete.addEventListener("click", async () => {
+      btnConfirmDelete.disabled = true;
+      try {
+        if (pendingDeleteType === "single" && pendingDeleteId) {
+          const res = await fetch(`/chat/delete/${pendingDeleteId}`, {
+            method: "POST",
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+          });
+          const result = await res.json();
+          if (result.status === "success") {
+            // Remove row from sidebar DOM immediately
+            const row = document.querySelector(`.history-item-row[data-id="${pendingDeleteId}"]`);
+            if (row) row.remove();
 
-  // --- Model Selector Dropdown ---
-  const btnModelDropdown = document.getElementById("btnModelDropdown");
-  const modelDropdownMenu = document.getElementById("modelDropdownMenu");
-  const currentModelLabel = document.getElementById("currentModelLabel");
-  if (btnModelDropdown && modelDropdownMenu) {
-    btnModelDropdown.addEventListener("click", (e) => {
-      e.stopPropagation();
-      modelDropdownMenu.classList.toggle("show");
-    });
-    document.addEventListener("click", () => {
-      modelDropdownMenu.classList.remove("show");
-    });
-
-    document.querySelectorAll(".model-dropdown-item").forEach(item => {
-      item.addEventListener("click", () => {
-        document.querySelectorAll(".model-dropdown-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-        if (currentModelLabel) currentModelLabel.textContent = item.getAttribute("data-model");
-        modelDropdownMenu.classList.remove("show");
-      });
-    });
-  }
-
-  // --- Attachment Plus Button Action ---
-  const btnAttach = document.getElementById("btnAttach");
-  if (btnAttach && userInput) {
-    btnAttach.addEventListener("click", () => {
-      userInput.placeholder = "Describe your marks, dream stream, or target colleges...";
-      userInput.focus();
-    });
-  }
-
-  // --- Bot Action Bar Handlers (Copy, Thumbs, Retry) ---
-  function bindBotActionEvents(container) {
-    const copyBtn = container.querySelector(".btn-action-copy");
-    const markdownBody = container.querySelector(".bot-bubble-markdown");
-    if (copyBtn && markdownBody) {
-      copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(markdownBody.innerText).then(() => {
-          copyBtn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10a37f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          `;
-          setTimeout(() => {
-            copyBtn.innerHTML = `
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            `;
-          }, 2000);
-        });
-      });
-    }
-
-    const retryBtn = container.querySelector(".btn-action-retry");
-    if (retryBtn) {
-      retryBtn.addEventListener("click", () => {
-        const userBubbles = document.querySelectorAll(".user-bubble");
-        if (userBubbles.length > 0) {
-          const lastUserText = userBubbles[userBubbles.length - 1].innerText;
-          sendMessage(lastUserText);
+            // If active conversation was deleted, redirect to home
+            if (pendingDeleteId === activeConvId) {
+              window.location.href = "/";
+            }
+          }
+        } else if (pendingDeleteType === "all") {
+          const res = await fetch("/chat/clear_all", {
+            method: "POST",
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+          });
+          const result = await res.json();
+          if (result.status === "success") {
+            window.location.href = "/";
+          }
         }
-      });
-    }
+      } catch (err) {
+        console.error("Delete error:", err);
+      } finally {
+        btnConfirmDelete.disabled = false;
+        closeModal();
+      }
+    });
   }
-
-  // Bind existing bot action bars
-  document.querySelectorAll(".message-row.bot-row").forEach(bindBotActionEvents);
 
   function escapeHtml(str) {
     return str

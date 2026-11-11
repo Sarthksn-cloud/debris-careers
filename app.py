@@ -1,18 +1,19 @@
 """
-Debris Careers - Main Flask Web Application
-Rule-based Career Consultant with Minimalist Monochrome Design.
+DEBRIS CAREERS — Main Flask Web Application
+Premium Minimal AI Career Consultant Platform
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import os
-import re
+import urllib.request
+import json
 import database as db
 from rule_engine import CareerRuleEngine
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Initialize the SQLite database on startup
+# Initialize SQLite database on startup
 db.init_db()
 
 def get_current_user():
@@ -23,21 +24,45 @@ def get_current_user():
         return {"id": user_id, "email": email}
     return None
 
+def query_ollama_if_available(prompt: str, system_context: str = ""):
+    """
+    Checks if Ollama is running locally at localhost:11434.
+    If available, queries Ollama model; otherwise returns None to fallback to CareerRuleEngine.
+    """
+    try:
+        url = "http://localhost:11434/api/generate"
+        payload = {
+            "model": "llama3",
+            "prompt": f"{system_context}\n\nUser Question: {prompt}\nAnswer:",
+            "stream": False
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=3) as response:
+            if response.status == 200:
+                result = json.loads(response.read().decode("utf-8"))
+                return result.get("response")
+    except Exception:
+        # Ollama not running or model not found, seamlessly fallback to built-in NLP engine
+        pass
+    return None
+
+# ============================================================================
+# Core Chatbot Routes
+# ============================================================================
+
 @app.route("/")
 def index():
-    """Root route: Redirect to login or load the latest conversation."""
+    """Root route: Redirect to login or load latest conversation."""
     user = get_current_user()
     if not user:
         return redirect(url_for("auth_view"))
     
-    # Retrieve user's conversations
     convs = db.get_user_conversations(user["id"])
     if not convs:
-        # Create initial conversation (clean start, wait for user input)
         conv_id = db.create_conversation(user["id"], "New Consultation")
         return redirect(url_for("chat_view", conv_id=conv_id))
     
-    # Redirect to most recently updated conversation
     return redirect(url_for("chat_view", conv_id=convs[0]["id"]))
 
 @app.route("/chat/<conv_id>")
@@ -49,7 +74,6 @@ def chat_view(conv_id):
     
     messages = db.get_conversation_messages(conv_id, user["id"])
     if messages is None:
-        # User doesn't own this conversation or it doesn't exist
         return redirect(url_for("index"))
     
     convs = db.get_user_conversations(user["id"])
@@ -66,7 +90,7 @@ def chat_view(conv_id):
 
 @app.route("/chat/new")
 def new_conversation():
-    """Create a new consultation session waiting for user input."""
+    """Start a fresh consultation session."""
     user = get_current_user()
     if not user:
         return redirect(url_for("auth_view"))
@@ -76,12 +100,18 @@ def new_conversation():
 
 @app.route("/chat/delete/<conv_id>", methods=["POST"])
 def delete_chat(conv_id):
-    """Delete a specific chat conversation."""
+    """Permanently delete a specific chat conversation."""
     user = get_current_user()
     if not user:
+        if request.is_json:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
         return redirect(url_for("auth_view"))
     
-    db.delete_conversation(conv_id, user["id"])
+    deleted = db.delete_conversation(conv_id, user["id"])
+    
+    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"status": "success", "deleted": deleted, "conv_id": conv_id})
+    
     return redirect(url_for("index"))
 
 @app.route("/chat/clear_all", methods=["POST"])
@@ -89,14 +119,20 @@ def clear_all_chats():
     """Clear all chat history for current user."""
     user = get_current_user()
     if not user:
+        if request.is_json:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
         return redirect(url_for("auth_view"))
     
     db.clear_all_conversations(user["id"])
+    
+    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"status": "success"})
+    
     return redirect(url_for("index"))
 
 @app.route("/api/chat", methods=["POST"])
 def api_chat():
-    """Process user message using the Rule-Based Consultant Engine."""
+    """Process user message and return AI response."""
     user = get_current_user()
     if not user:
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
@@ -114,48 +150,58 @@ def api_chat():
         return jsonify({"status": "error", "message": "Conversation not found"}), 404
 
     # Save user message to database
-    db.save_message(conv_id, "user", user_msg)
+    user_time = db.save_message(conv_id, "user", user_msg)
 
-    # If this is the user's first message, update conversation title
+    # If first user message, generate concise conversation title
     user_messages_count = sum(1 for m in existing_messages if m["sender"] == "user")
     if user_messages_count == 0:
         clean_title = user_msg[:28] + ("..." if len(user_msg) > 28 else "")
         db.update_conversation_title(conv_id, clean_title)
 
-    # Retrieve conversational state for this session
+    # Retrieve conversation context state
     state = db.get_conversation_state(conv_id)
 
-    # Process message through Rule Engine (Deterministic, No API)
-    bot_reply, updated_state, options = CareerRuleEngine.process_message(user_msg, state)
+    # Check if Ollama is available, otherwise use NLP Rule Engine
+    ollama_reply = query_ollama_if_available(user_msg, system_context="You are Debris Careers AI, an expert academic and career counselor.")
+    if ollama_reply:
+        bot_reply = ollama_reply
+        updated_state = state
+        options = []
+    else:
+        bot_reply, updated_state, options = CareerRuleEngine.process_message(user_msg, state)
 
-    # Save updated state
+    # Save updated context state
     db.save_conversation_state(conv_id, updated_state)
 
-    # Save bot message to database
-    db.save_message(conv_id, "bot", bot_reply, options)
+    # Save bot response to database
+    bot_time = db.save_message(conv_id, "bot", bot_reply, options)
 
     return jsonify({
         "status": "success",
         "bot_message": bot_reply,
-        "options": options
+        "user_time": user_time,
+        "bot_time": bot_time
     })
 
-# Authentication Views
+# ============================================================================
+# Authentication Routes
+# ============================================================================
+
 @app.route("/auth")
 def auth_view():
-    """Display Login & Registration forms."""
+    """Display Login & Sign-up page."""
     if get_current_user():
         return redirect(url_for("index"))
     return render_template("auth.html", mode=request.args.get("mode", "login"))
 
 @app.route("/auth/login", methods=["POST"])
 def auth_login():
-    """Handle user login."""
+    """Handle user login with email and password validation."""
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "")
 
-    if len(password) > 8:
-        return render_template("auth.html", error="Password policy: Maximum 8 characters allowed.", mode="login")
+    if not email or not password:
+        return render_template("auth.html", error="Please provide both email and password.", mode="login")
 
     success, result = db.verify_user(email, password)
     if success:
@@ -167,15 +213,12 @@ def auth_login():
 
 @app.route("/auth/register", methods=["POST"])
 def auth_register():
-    """Handle new user registration with strict 8-char password limit."""
+    """Handle user registration."""
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "")
 
-    if len(password) > 8:
-        return render_template("auth.html", error="Password policy: Password must be maximum 8 characters.", mode="register")
-    
-    if len(password) < 1:
-        return render_template("auth.html", error="Password cannot be empty.", mode="register")
+    if not email or not password:
+        return render_template("auth.html", error="Please provide both email and password.", mode="register")
 
     success, result = db.register_user(email, password)
     if success:
@@ -187,31 +230,33 @@ def auth_register():
 
 @app.route("/auth/logout")
 def auth_logout():
-    """Clear session and log out user."""
+    """Clear session and securely log out."""
     session.clear()
     return redirect(url_for("auth_view"))
+
+# ============================================================================
+# Server Port Configuration
+# ============================================================================
 
 def find_available_port(default_port=5005):
     """Find a guaranteed free port starting from default_port, avoiding macOS system conflicts."""
     import socket
     for p in range(default_port, default_port + 30):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            # If connect_ex != 0, port is not currently bound
             if s.connect_ex(('127.0.0.1', p)) != 0:
                 return p
     return default_port
 
 if __name__ == "__main__":
     import sys
-    # Allow overriding port via command line argument: python3 app.py 8080
     if len(sys.argv) > 1 and sys.argv[1].isdigit():
         target_port = int(sys.argv[1])
     else:
         target_port = find_available_port(default_port=5005)
 
     print("=" * 65)
-    print("🏛️  DEBRIS CAREERS — AI & NLP CAREER CONSULTANT")
-    print(f"🚀  Web server running live at:")
+    print("✨  DEBRIS CAREERS — AI & NLP CAREER CONSULTANT PLATFORM")
+    print(f"🚀  Server running live at:")
     print(f"👉  http://127.0.0.1:{target_port}")
     print("=" * 65)
     app.run(host="127.0.0.1", port=target_port, debug=False)

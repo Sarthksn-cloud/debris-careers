@@ -1,98 +1,253 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debris Careers — Log in or Sign up</title>
+  <title>DEBRIS CAREERS — Welcome</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="chatgpt-auth-body">
+<body class="auth-body">
+  
+  <!-- Ambient Soft Lavender Background Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
 
-  <div class="chatgpt-auth-card">
+  <div class="auth-viewport">
     
-    <!-- Iconic ChatGPT Spark Logo -->
-    <div class="auth-spark-logo">
-      <img src="{{ url_for('static', filename='images/chatgpt_spark.svg') }}" alt="Debris Careers" class="auth-spark-img">
-    </div>
-
-    <h1 class="auth-heading">
-      {% if mode == 'register' %}Create your account{% else %}Welcome back{% endif %}
-    </h1>
-    <p class="auth-subheading">Sign in to your Debris Careers AI Consultant</p>
-
-    {% if error %}
-    <div class="auth-error-banner">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ error }}</span>
-    </div>
-    {% endif %}
-
-    <!-- Tab switcher -->
-    <div class="auth-tabs-row">
-      <button type="button" class="auth-pill-tab {% if mode != 'register' %}active{% endif %}" id="tabLogin">Log in</button>
-      <button type="button" class="auth-pill-tab {% if mode == 'register' %}active{% endif %}" id="tabRegister">Sign up</button>
-    </div>
-
-    <!-- Login Form -->
-    <form id="loginForm" method="POST" action="{{ url_for('auth_login') }}" class="auth-form-body" style="{% if mode == 'register' %}display: none;{% endif %}">
-      <div class="auth-input-group">
-        <label for="loginEmail">Email address</label>
-        <input type="email" id="loginEmail" name="email" class="chatgpt-input" placeholder="name@example.com" required autocomplete="email">
+    <!-- Centered Lavender Glassmorphic Login Card -->
+    <div class="auth-card glass-panel">
+      
+      <!-- Logo & Branding -->
+      <div class="auth-brand">
+        <div class="brand-emblem">
+          <img src="{{ url_for('static', filename='images/debris_symbol.svg') }}" alt="DEBRIS CAREERS" class="brand-symbol-svg">
+        </div>
+        <h2 class="brand-wordmark">DEBRIS CAREERS</h2>
       </div>
-      <div class="auth-input-group">
-        <label for="loginPassword">Password (Max 8 characters)</label>
-        <input type="password" id="loginPassword" name="password" class="chatgpt-input" maxlength="8" placeholder="••••••••" required autocomplete="current-password">
-        <small class="auth-input-hint">Security: Maximum 8 characters allowed.</small>
-      </div>
-      <button type="submit" class="btn-chatgpt-primary">Continue</button>
-    </form>
 
-    <!-- Register Form -->
-    <form id="registerForm" method="POST" action="{{ url_for('auth_register') }}" class="auth-form-body" style="{% if mode != 'register' %}display: none;{% endif %}">
-      <div class="auth-input-group">
-        <label for="regEmail">Email address</label>
-        <input type="email" id="regEmail" name="email" class="chatgpt-input" placeholder="name@example.com" required autocomplete="email">
+      <!-- Welcome Headings -->
+      <div class="auth-headings">
+        <h1 class="auth-title" id="authTitle">
+          {% if mode == 'register' %}Create Account{% else %}Welcome Back{% endif %}
+        </h1>
+        <p class="auth-subtitle">Your AI career companion is ready.</p>
       </div>
-      <div class="auth-input-group">
-        <label for="regPassword">Password (Max 8 characters)</label>
-        <input type="password" id="regPassword" name="password" class="chatgpt-input" maxlength="8" placeholder="••••••••" required autocomplete="new-password">
-        <small class="auth-input-hint">Policy: Maximum 8 characters allowed.</small>
-      </div>
-      <button type="submit" class="btn-chatgpt-primary">Create account</button>
-    </form>
 
-    <div class="auth-card-footer">
-      <span>Deterministic Rule-Based Career Architecture</span>
+      {% if error %}
+      <div class="auth-error-alert" role="alert">
+        <svg class="error-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn {% if mode != 'register' %}active{% endif %}" id="tabLoginBtn">Sign In</button>
+        <button type="button" class="auth-tab-btn {% if mode == 'register' %}active{% endif %}" id="tabRegisterBtn">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="loginForm" method="POST" action="{{ url_for('auth_login') }}" class="auth-form" style="{% if mode == 'register' %}display: none;{% endif %}">
+        <div class="form-field">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <div class="input-wrapper">
+            <input type="email" id="loginEmail" name="email" class="glass-input" placeholder="name@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="loginPassword">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="loginPassword" name="password" class="glass-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="btn-toggle-password" data-target="loginPassword" title="Show or hide password">
+              <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="eye-icon eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row-utility">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" id="rememberMe">
+            <span class="custom-check"></span>
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link" id="btnForgotPwd">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-primary-purple" id="btnLoginSubmit">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="registerForm" method="POST" action="{{ url_for('auth_register') }}" class="auth-form" style="{% if mode != 'register' %}display: none;{% endif %}">
+        <div class="form-field">
+          <label class="form-label" for="regEmail">Email Address</label>
+          <div class="input-wrapper">
+            <input type="email" id="regEmail" name="email" class="glass-input" placeholder="name@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="regPassword">Password (Min 4 characters)</label>
+          <div class="input-wrapper">
+            <input type="password" id="regPassword" name="password" class="glass-input" placeholder="••••••••" required autocomplete="new-password">
+            <button type="button" class="btn-toggle-password" data-target="regPassword" title="Show or hide password">
+              <svg class="eye-icon eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="eye-icon eye-closed hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary-purple" id="btnRegisterSubmit">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+      </form>
+
+      <!-- Bottom Switch Note -->
+      <div class="auth-switch-note" id="authSwitchNote">
+        {% if mode == 'register' %}
+          <span>Already have an account?</span> <a href="#" id="linkSwitchToLogin">Sign in</a>
+        {% else %}
+          <span>Don't have an account?</span> <a href="#" id="linkSwitchToRegister">Sign up</a>
+        {% endif %}
+      </div>
+
     </div>
 
   </div>
 
+  <!-- Forgot Password Modal -->
+  <div class="glass-modal-backdrop hidden" id="forgotModal">
+    <div class="glass-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Password Assistance</h3>
+        <button type="button" class="btn-modal-close" id="btnCloseForgotModal">✕</button>
+      </div>
+      <p class="modal-body-text">
+        In the local Debris Careers environment, you can register a new account or contact your project evaluator to reset your session.
+      </p>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary-glass" id="btnDismissForgotModal">Understood</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const tabLogin = document.getElementById('tabLogin');
-    const tabRegister = document.getElementById('tabRegister');
+    // Tab switching
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
-    const authHeading = document.querySelector('.auth-heading');
+    const authTitle = document.getElementById('authTitle');
+    const authSwitchNote = document.getElementById('authSwitchNote');
+    const linkSwitchToRegister = document.getElementById('linkSwitchToRegister');
+    const linkSwitchToLogin = document.getElementById('linkSwitchToLogin');
 
-    tabLogin.addEventListener('click', () => {
-      tabLogin.classList.add('active');
-      tabRegister.classList.remove('active');
+    function showLogin() {
+      tabLoginBtn.classList.add('active');
+      tabRegisterBtn.classList.remove('active');
       loginForm.style.display = 'flex';
       registerForm.style.display = 'none';
-      if (authHeading) authHeading.textContent = 'Welcome back';
-    });
+      authTitle.textContent = 'Welcome Back';
+      authSwitchNote.innerHTML = `<span>Don't have an account?</span> <a href="#" id="linkSwitchToRegister">Sign up</a>`;
+      attachSwitchListeners();
+    }
 
-    tabRegister.addEventListener('click', () => {
-      tabRegister.classList.add('active');
-      tabLogin.classList.remove('active');
+    function showRegister() {
+      tabRegisterBtn.classList.add('active');
+      tabLoginBtn.classList.remove('active');
       registerForm.style.display = 'flex';
       loginForm.style.display = 'none';
-      if (authHeading) authHeading.textContent = 'Create your account';
+      authTitle.textContent = 'Create Account';
+      authSwitchNote.innerHTML = `<span>Already have an account?</span> <a href="#" id="linkSwitchToLogin">Sign in</a>`;
+      attachSwitchListeners();
+    }
+
+    tabLoginBtn.addEventListener('click', showLogin);
+    tabRegisterBtn.addEventListener('click', showRegister);
+
+    function attachSwitchListeners() {
+      const toReg = document.getElementById('linkSwitchToRegister');
+      const toLog = document.getElementById('linkSwitchToLogin');
+      if (toReg) toReg.addEventListener('click', (e) => { e.preventDefault(); showRegister(); });
+      if (toLog) toLog.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+    }
+    attachSwitchListeners();
+
+    // Show/Hide password toggle
+    document.querySelectorAll('.btn-toggle-password').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const eyeOpen = btn.querySelector('.eye-open');
+        const eyeClosed = btn.querySelector('.eye-closed');
+        if (input.type === 'password') {
+          input.type = 'text';
+          eyeOpen.classList.add('hidden');
+          eyeClosed.classList.remove('hidden');
+        } else {
+          input.type = 'password';
+          eyeOpen.classList.remove('hidden');
+          eyeClosed.classList.add('hidden');
+        }
+      });
     });
+
+    // Form submit loading state
+    [loginForm, registerForm].forEach(form => {
+      form.addEventListener('submit', (e) => {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const textSpan = submitBtn.querySelector('.btn-text');
+        const loader = submitBtn.querySelector('.btn-loader');
+        if (textSpan && loader) {
+          textSpan.style.opacity = '0';
+          loader.classList.remove('hidden');
+        }
+      });
+    });
+
+    // Forgot password modal
+    const forgotModal = document.getElementById('forgotModal');
+    const btnForgotPwd = document.getElementById('btnForgotPwd');
+    const btnCloseForgotModal = document.getElementById('btnCloseForgotModal');
+    const btnDismissForgotModal = document.getElementById('btnDismissForgotModal');
+
+    if (btnForgotPwd && forgotModal) {
+      btnForgotPwd.addEventListener('click', (e) => {
+        e.preventDefault();
+        forgotModal.classList.remove('hidden');
+      });
+    }
+    function closeForgot() {
+      if (forgotModal) forgotModal.classList.add('hidden');
+    }
+    if (btnCloseForgotModal) btnCloseForgotModal.addEventListener('click', closeForgot);
+    if (btnDismissForgotModal) btnDismissForgotModal.addEventListener('click', closeForgot);
+    if (forgotModal) {
+      forgotModal.addEventListener('click', (e) => {
+        if (e.target === forgotModal) closeForgot();
+      });
+    }
   </script>
 </body>
 </html>
