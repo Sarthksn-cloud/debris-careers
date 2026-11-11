@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEBRIS CAREERS — Microsoft Innovate 2026 Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: #0b0f17;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+    }
+    .brand-text h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+    }
+    .brand-text p {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .viewport {
+      position: relative;
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      transition: opacity 0.25s ease;
+    }
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    .nav-arrow:hover {
+      opacity: 1;
+      background: rgba(30, 41, 59, 0.9);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .nav-arrow.prev { left: 16px; }
+    .nav-arrow.next { right: 16px; }
+
+    .bottom-bar {
+      margin-top: 18px;
+      width: 100%;
+      max-width: 1280px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .slide-info {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+    .thumbnails {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px;
+    }
+    .thumb {
+      width: 80px;
+      aspect-ratio: 16 / 9;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.55;
+      transition: all 0.2s;
+      background: #1e293b;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .thumb:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    .thumb.active {
+      border-color: #38bdf8;
+      opacity: 1;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+    .keyboard-hint {
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kbd {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-family: monospace;
+      font-size: 11px;
+    }
+    @media (max-width: 768px) {
+      .thumbnails { display: none; }
+      .brand-text p { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">D</div>
+      <div class="brand-text">
+        <h1>DEBRIS CAREERS</h1>
+        <p>Microsoft Innovate 2026 · Bennett University · Team 506</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="toggleFullscreen()" title="Toggle Fullscreen (F)">
+        <span>⛶</span> Fullscreen
+      </button>
+      <a class="btn btn-primary" href="Debris_Careers_Microsoft_Innovate_2026_Presentation.pdf" download="Debris_Careers_Microsoft_Innovate_2026_Presentation.pdf" target="_blank">
+        <span>↓</span> Download PDF
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="viewport" id="viewport">
+      <button class="nav-arrow prev" onclick="prevSlide()" aria-label="Previous Slide">❮</button>
+      <img id="current-slide" class="slide-image" src="presentation_slides/slide_1.png" alt="Slide 1">
+      <button class="nav-arrow next" onclick="nextSlide()" aria-label="Next Slide">❯</button>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="slide-info" id="slide-info">Slide 1 of 6: Title & Metadata</div>
+      
+      <div class="thumbnails" id="thumb-container">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="keyboard-hint">
+        Use <span class="kbd">←</span> <span class="kbd">→</span> or <span class="kbd">Space</span> to navigate
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const slides = [
+      { id: 1, title: "Title & Metadata", file: "presentation_slides/slide_1.png" },
+      { id: 2, title: "Team Details", file: "presentation_slides/slide_2.png" },
+      { id: 3, title: "Problem Statement", file: "presentation_slides/slide_3.png" },
+      { id: 4, title: "Proposed Solution", file: "presentation_slides/slide_4.png" },
+      { id: 5, title: "Technical Approach", file: "presentation_slides/slide_5.png" },
+      { id: 6, title: "Impact & Next Steps", file: "presentation_slides/slide_6.png" }
+    ];
+
+    let currentIdx = 0;
+    const slideImg = document.getElementById('current-slide');
+    const slideInfo = document.getElementById('slide-info');
+    const thumbContainer = document.getElementById('thumb-container');
+
+    // Build thumbnails
+    slides.forEach((s, idx) => {
+      const thumb = document.createElement('div');
+      thumb.className = `thumb ${idx === 0 ? 'active' : ''}`;
+      thumb.innerHTML = `<img src="${s.file}" alt="Slide ${s.id}">`;
+      thumb.onclick = () => goToSlide(idx);
+      thumbContainer.appendChild(thumb);
+    });
+
+    function updateView() {
+      slideImg.style.opacity = '0.3';
+      setTimeout(() => {
+        slideImg.src = slides[currentIdx].file;
+        slideImg.alt = `Slide ${slides[currentIdx].id}: ${slides[currentIdx].title}`;
+        slideImg.style.opacity = '1';
+      }, 100);
+
+      slideInfo.innerText = `Slide ${currentIdx + 1} of ${slides.length}: ${slides[currentIdx].title}`;
+      
+      // Update thumbnail active states
+      const thumbs = thumbContainer.children;
+      for (let i = 0; i < thumbs.length; i++) {
+        thumbs[i].classList.toggle('active', i === currentIdx);
+      }
+    }
+
+    function prevSlide() {
+      if (currentIdx > 0) {
+        currentIdx--;
+        updateView();
+      }
+    }
+
+    function nextSlide() {
+      if (currentIdx < slides.length - 1) {
+        currentIdx++;
+        updateView();
+      }
+    }
+
+    function goToSlide(idx) {
+      if (idx >= 0 && idx < slides.length) {
+        currentIdx = idx;
+        updateView();
+      }
+    }
+
+    function toggleFullscreen() {
+      const elem = document.getElementById('viewport');
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+          alert(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>

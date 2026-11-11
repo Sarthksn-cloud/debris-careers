@@ -3,7 +3,7 @@ DEBRIS CAREERS — Main Flask Web Application
 Premium Minimal AI Career Consultant Platform
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 import os
 import urllib.request
 import json
@@ -233,6 +233,23 @@ def auth_logout():
     """Clear session and securely log out."""
     session.clear()
     return redirect(url_for("auth_view"))
+
+# ============================================================================
+# Presentation Deck Routes (Microsoft Innovate 2026)
+# ============================================================================
+
+@app.route("/presentation")
+def presentation_view():
+    """Interactive Microsoft Innovate 2026 Presentation Viewer"""
+    return render_template("presentation.html")
+
+@app.route("/presentation/download")
+def presentation_download():
+    """Direct download of the official Microsoft Innovate 2026 PDF Presentation"""
+    pdf_path = os.path.join(app.root_path, "Debris_Careers_Microsoft_Innovate_2026_Presentation.pdf")
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, as_attachment=True, download_name="Debris_Careers_Microsoft_Innovate_2026_Presentation.pdf")
+    return "Presentation PDF not found. Run generate_presentation_pdf.py first.", 404
 
 # ============================================================================
 # Server Port Configuration
